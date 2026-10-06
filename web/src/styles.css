@@ -450,8 +450,8 @@ span.nade,
   color: var(--text);
 }
 
-.badge.kit {
-  color: var(--ct);
+.icons .hud-icon {
+  height: 14px;
 }
 
 .badge.c4 {
