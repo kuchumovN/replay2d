@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
+import type { BuiltMatch } from './build.js';
 import { parseDemo } from './parse.js';
 
 /**
@@ -11,7 +12,11 @@ const demo = process.env.SKYBOX_TEST_DEMO ?? fileURLToPath(new URL('../../../fix
 const isDefaultFixture = !process.env.SKYBOX_TEST_DEMO;
 
 describe.skipIf(!existsSync(demo))('parseDemo (real demo)', () => {
-  const match = parseDemo(demo, 'test.dem', () => {});
+  // Parsed in beforeAll: the describe body also runs for skipped suites (during collection).
+  let match: BuiltMatch;
+  beforeAll(() => {
+    match = parseDemo(demo, 'test.dem', () => {});
+  });
 
   it('produces rounds with ten players and consistent frames', () => {
     expect(match.rounds.length).toBeGreaterThan(0);
