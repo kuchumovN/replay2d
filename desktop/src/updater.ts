@@ -76,7 +76,7 @@ export async function installUpdate(onProgress: (fraction: number) => void): Pro
       const { done, value } = await reader.read();
       if (done) break;
       received += value.length;
-      if (!out.write(value)) await Promise.race([new Promise((r) => out.once('drain', r)), written]);
+      if (!out.write(value)) await Promise.race([new Promise<void>((r) => out.once('drain', () => r())), written]);
       if (total) onProgress(received / total);
     }
   } finally {
