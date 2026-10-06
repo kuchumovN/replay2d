@@ -5,7 +5,7 @@ const ICON_URLS: Record<string, string> = Object.fromEntries(
   ),
 );
 
-export type HudIconName = 'armor' | 'armor_helmet' | 'blind_kill' | 'icon_headshot' | 'inairkill' | 'noscope' | 'penetrate' | 'smoke_kill';
+export type HudIconName = 'armor' | 'armor_helmet' | 'blind_kill' | 'defuser' | 'icon_headshot' | 'inairkill' | 'noscope' | 'penetrate' | 'smoke_kill';
 
 export function HudIcon({ name, title, className }: { name: HudIconName; title: string; className?: string }) {
   return <img className={`hud-icon${className ? ` ${className}` : ''}`} src={ICON_URLS[name]} alt={title} title={title} draggable={false} />;

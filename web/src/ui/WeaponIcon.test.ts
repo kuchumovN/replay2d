@@ -21,7 +21,7 @@ describe('weapon icons', () => {
 
   it('has every HUD icon', () => {
     const hud = Object.keys(import.meta.glob('../assets/hud/*.svg')).map((p) => p.slice(p.lastIndexOf('/') + 1, -'.svg'.length));
-    expect(hud.sort()).toEqual(['armor', 'armor_helmet', 'blind_kill', 'icon_headshot', 'inairkill', 'noscope', 'penetrate', 'smoke_kill']);
+    expect(hud.sort()).toEqual(['armor', 'armor_helmet', 'blind_kill', 'defuser', 'icon_headshot', 'inairkill', 'noscope', 'penetrate', 'smoke_kill']);
   });
 
   it('has an icon for every grenade, C4 and common weapon', () => {

@@ -110,7 +110,7 @@ function TeamTable({ title, cls, rows, selected, onSelect }: { title: string; cl
                 {r.grenades.map((g, i) => (
                   <WeaponIcon key={i} name={g} className="nade" />
                 ))}
-                {r.defuser && <span className="badge kit" title="Defuse kit">KIT</span>}
+                {r.defuser && <HudIcon name="defuser" title="Defuse kit" />}
                 {r.bomb && <span className="badge c4" title="Bomb">C4</span>}
                 <span className="money">${r.money}</span>
               </span>
