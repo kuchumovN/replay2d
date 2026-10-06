@@ -1,16 +1,8 @@
-import { INVENTORY_C4, SIDE_CT, SIDE_T, type MatchMeta, type Side } from '@skybox/shared';
+import { INVENTORY_C4, INVENTORY_GRENADES, SIDE_CT, SIDE_T, type MatchMeta, type Side } from '@skybox/shared';
 import { samplePlayer, slowIndex, type PlayerSample } from '../playback/interp';
 import type { PlaybackSnapshot } from '../playback/playback';
 import { bombState } from '../playback/state';
-
-const GRENADE_ICONS: Record<string, { label: string; title: string }> = {
-  'Smoke Grenade': { label: 'S', title: 'Smoke' },
-  Flashbang: { label: 'F', title: 'Flashbang' },
-  'High Explosive Grenade': { label: 'H', title: 'HE grenade' },
-  Molotov: { label: 'M', title: 'Molotov' },
-  'Incendiary Grenade': { label: 'I', title: 'Incendiary' },
-  'Decoy Grenade': { label: 'D', title: 'Decoy' },
-};
+import { WeaponIcon } from './WeaponIcon';
 
 interface Row {
   steamid: string;
@@ -58,7 +50,7 @@ export function Scoreboard({ snap, meta, names, onSelect }: Props) {
         kills: slow?.kills[si] ?? 0,
         deaths: slow?.deaths[si] ?? 0,
         assists: slow?.assists[si] ?? 0,
-        grenades: sample.alive ? inventory.map((s) => round.strings[s]).filter((s) => GRENADE_ICONS[s]) : [],
+        grenades: sample.alive ? inventory.map((s) => round.strings[s]).filter((s) => INVENTORY_GRENADES.includes(s)) : [],
         bomb: bomb?.kind === 'carried' ? bomb.player === p.steamid : sample.alive && inventory.includes(c4) && bomb === null,
       });
     });
@@ -106,12 +98,10 @@ function TeamTable({ title, cls, rows, selected, onSelect }: { title: string; cl
               </span>
             </div>
             <div className="player-line small">
-              <span className="weapon-name">{r.sample.alive ? r.sample.weapon : 'dead'}</span>
+              <span className="weapon-name">{!r.sample.alive ? 'dead' : r.sample.weapon && <WeaponIcon name={r.sample.weapon} />}</span>
               <span className="icons">
                 {r.grenades.map((g, i) => (
-                  <span key={i} className="nade" title={GRENADE_ICONS[g].title}>
-                    {GRENADE_ICONS[g].label}
-                  </span>
+                  <WeaponIcon key={i} name={g} className="nade" />
                 ))}
                 {r.armor > 0 && <span className="badge" title={`Armor ${r.armor}`}>{r.helmet ? 'A+H' : 'A'}</span>}
                 {r.defuser && <span className="badge kit" title="Defuse kit">KIT</span>}

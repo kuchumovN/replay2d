@@ -409,9 +409,28 @@ button.ghost {
 }
 
 .weapon-name {
+  display: flex;
+  align-items: center;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.weapon-icon {
+  display: block;
+  height: 14px;
+  width: auto;
+  flex: none;
+}
+
+.kill .weapon-icon {
+  height: 16px;
+}
+
+.weapon-icon.nade {
+  height: 13px;
+  opacity: 0.85;
 }
 
 .icons {
@@ -421,7 +440,7 @@ button.ghost {
   flex: none;
 }
 
-.nade,
+span.nade,
 .badge {
   font-size: 10px;
   font-weight: 700;

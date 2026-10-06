@@ -1,6 +1,7 @@
-import { SIDE_CT, weaponDisplayName, type RoundData } from '@skybox/shared';
+import { SIDE_CT, type RoundData } from '@skybox/shared';
 import { samplePlayer } from '../playback/interp';
 import { killsUntil } from '../playback/state';
+import { WeaponIcon } from './WeaponIcon';
 
 const MAX_KILLS = 5;
 /** Kills older than this (in ticks at 64 tick) are dimmed. */
@@ -31,7 +32,7 @@ export function KillFeed({ round, tick, names }: { round: RoundData; tick: numbe
           )}
           <span className="weapon">
             {k.attackerBlind && <span className="tag" title="Attacker was blind">blind</span>}
-            {weaponDisplayName(k.weapon)}
+            <WeaponIcon name={k.weapon} />
             {k.noScope && <span className="tag">noscope</span>}
             {k.throughSmoke && <span className="tag">smoke</span>}
             {k.wallbang && <span className="tag">wall</span>}
