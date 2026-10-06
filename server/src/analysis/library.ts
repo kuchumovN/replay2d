@@ -1,10 +1,9 @@
-import { randomUUID } from 'node:crypto';
-import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { EXTRACT_VERSION, type AnalysisJob, type DemoExtract, type LibraryDemo } from '@skybox/shared';
 import type { WorkerMessage } from '../parse/worker.js';
 import { createWorker } from '../store.js';
-import { demoId } from './extract.js';
 
 interface QueuedDemo {
   jobId: string;
@@ -13,6 +12,14 @@ interface QueuedDemo {
   deleteFile: boolean;
 }
 
+/** Stable id of a demo file, so adding the same demo twice replaces it. */
+async function demoId(path: string, fileName: string): Promise<string> {
+  const { size } = await stat(path);
+  return createHash('sha1').update(`${fileName}:${size}`).digest('hex').slice(0, 16);
+}
+
+// The native parser must stay out of this module graph: it runs in the Electron main process, before
+// SKYBOX_DEMOPARSER is set, and only workers load the parser.
 const summary = ({ places: _places, lives: _lives, ...demo }: DemoExtract): LibraryDemo => demo;
 
 /** Route-analysis extracts persisted as one JSON file per demo; demos are extracted one at a time. */

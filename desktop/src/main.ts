@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
@@ -13,6 +14,9 @@ const token = randomBytes(24).toString('hex');
 // Packaged builds keep the native parser in resources/native (outside the app bundle).
 const packagedParser = join(process.resourcesPath ?? '', 'native', 'demoparser2');
 if (app.isPackaged && existsSync(packagedParser)) process.env.SKYBOX_DEMOPARSER = packagedParser;
+// Parsing runs in workers, but the native module must stay loaded in the main process too: otherwise it is unloaded
+// when a worker exits while the parser's thread pool is still alive, and the app crashes (access violation).
+createRequire(import.meta.url)(process.env.SKYBOX_DEMOPARSER ?? '@laihoe/demoparser2');
 
 setWorkerScript(new URL('./worker.mjs', import.meta.url));
 

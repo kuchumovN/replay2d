@@ -1,7 +1,7 @@
 // Bundles the Electron main process, the parser worker and the preload script into desktop/dist,
 // and copies the built web app (with radar images) next to them.
 import { execSync } from 'node:child_process';
-import { cpSync, existsSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
@@ -37,6 +37,12 @@ await build({
   format: 'cjs',
   external: ['electron'],
 });
+
+// Parser modules load the native parser at import time, i.e. before main.ts sets SKYBOX_DEMOPARSER; they belong
+// in the worker bundle only.
+if (readFileSync(`${dist}main.mjs`, 'utf8').includes('parseTicks')) {
+  throw new Error('main.mjs contains demo parsing code; keep parser imports in worker-only modules.');
+}
 
 cpSync(`${root}web/dist`, `${dist}web`, { recursive: true });
 console.log(`Bundled into ${dist}`);

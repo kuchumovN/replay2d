@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto';
-import { stat } from 'node:fs/promises';
 import { EXTRACT_VERSION, SIDE_CT, SIDE_T, type DemoExtract, type Life, type Side } from '@skybox/shared';
 import { playerKey, type Columns } from '../parse/build.js';
 import { parser, TICKRATE } from '../parse/native.js';
@@ -18,12 +16,6 @@ export interface RawDeath {
   attacker_name?: string | null;
   user_last_place_name?: string | null;
   attacker_last_place_name?: string | null;
-}
-
-/** Stable id of a demo file, so adding the same demo twice replaces it. */
-export async function demoId(path: string, fileName: string): Promise<string> {
-  const { size } = await stat(path);
-  return createHash('sha1').update(`${fileName}:${size}`).digest('hex').slice(0, 16);
 }
 
 export function extractDemo(path: string, fileName: string, id: string, onStage: (stage: string) => void): DemoExtract {

@@ -140,6 +140,11 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 - electron-builder не копирует папки `node_modules` в `extraResources` → парсер кладётся в
   `resources/native/demoparser2`, `.node` копируется рядом с `index.js` (загрузчик сначала ищет локальный файл);
   путь передаётся воркеру через `SKYBOX_DEMOPARSER`.
+- Нативный парсер в главном процессе: модули `server/src/parse/*`, `analysis/extract.ts` грузят его при импорте (ESM
+  поднимает импорты выше кода `main.ts`, до установки `SKYBOX_DEMOPARSER`) → в `main.mjs` их быть не должно
+  (`bundle.mjs` падает, если там есть `parseTicks`). При этом `main.ts` сам закрепляет парсер `require`-ом после установки
+  пути: иначе DLL выгружается при выходе воркера, пока жив её пул потоков → access violation в `demoparser2..._unloaded`
+  (гонка, воспроизводится нестабильно). В dev этого не видно: там парсер всегда загружен и в главном потоке.
 - electron-builder тащит `dependencies` из `desktop/package.json` в приложение → там их нет намеренно (всё в бандле).
 - `asar: false` (воркер и нативный модуль вне архива), `mac.identity: '-'` (ad-hoc, иначе не запустится на
   Apple Silicon), `hardenedRuntime: false` (с ad-hoc подписью блокирует загрузку нативной библиотеки).
