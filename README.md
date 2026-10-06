@@ -11,7 +11,7 @@ Local web app that replays Counter-Strike 2 demos (`.dem`) as a 2D top-down view
 
 ## Desktop app (Windows / macOS)
 
-Download the installer from [Releases](https://github.com/kuchumovN/skybox/releases):
+Download the installer from [Releases](https://github.com/kuchumovN/skybox-cs2/releases):
 
 - **macOS (Apple Silicon, M1 and newer):** `Skybox-<version>-mac-apple-silicon.dmg` → drag Skybox to Applications.
   Intel Macs are not supported (the parser has no current Intel build).
