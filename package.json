@@ -1,0 +1,22 @@
+{
+  "name": "skybox",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": ["shared", "server", "web"],
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,green \"npm:dev -w server\" \"npm:dev -w web\"",
+    "build": "npm run build -w web",
+    "start": "npm run build && NODE_ENV=production npm run start -w server",
+    "test": "vitest run",
+    "typecheck": "tsc -p server && tsc -p web && tsc -p scripts",
+    "fetch-maps": "tsx scripts/fetch-maps.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3",
+    "@types/node": "^22.0.0"
+  }
+}
