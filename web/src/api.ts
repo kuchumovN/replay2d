@@ -1,4 +1,5 @@
 import type { MapInfo, ParseStatus, RoundData } from '@skybox/shared';
+import { desktop } from './desktop';
 
 async function json<T>(res: Response): Promise<T> {
   const body = await res.json().catch(() => ({}));
@@ -26,6 +27,16 @@ export function uploadDemo(file: File, onProgress: (fraction: number) => void): 
     xhr.onerror = () => reject(new Error('Upload failed: server is not reachable.'));
     xhr.send(file);
   });
+}
+
+/** Desktop only: parses a demo straight from disk instead of uploading it. */
+export async function openLocalDemo(path: string): Promise<string> {
+  const res = await fetch('/api/demos/local', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-skybox-token': desktop?.token ?? '' },
+    body: JSON.stringify({ path }),
+  });
+  return (await json<{ id: string }>(res)).id;
 }
 
 export async function getStatus(id: string): Promise<ParseStatus> {

@@ -1,0 +1,15 @@
+/** Bridge exposed by the Electron preload script; absent in the browser. */
+export interface DesktopBridge {
+  /** Absolute path of a dropped/selected file, or "" if unknown. */
+  pathForFile(file: File): string;
+  /** Token required by the local-file endpoint. */
+  token: string;
+}
+
+declare global {
+  interface Window {
+    skybox?: DesktopBridge;
+  }
+}
+
+export const desktop: DesktopBridge | undefined = typeof window === 'undefined' ? undefined : window.skybox;

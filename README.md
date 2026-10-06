@@ -9,6 +9,33 @@ Local web app that replays Counter-Strike 2 demos (`.dem`) as a 2D top-down view
 - Round strip, scrubber with kill/bomb markers, 0.25–8× speed
 - Multi-level maps (Nuke, Vertigo, Train) are shown as radars side by side
 
+## Desktop app (Windows / macOS)
+
+Download the installer from [Releases](https://github.com/kuchumovN/skybox/releases):
+
+- **macOS (Apple Silicon, M1 and newer):** `Skybox-<version>-mac-apple-silicon.dmg` → drag Skybox to Applications.
+  Intel Macs are not supported (the parser has no current Intel build).
+- **Windows (x64):** `Skybox-<version>-windows-setup.exe` → installs and starts in one click.
+
+Radar images are bundled, so it works offline. Demos are read straight from disk (no copy).
+
+The builds are not code-signed, so the first launch shows a warning:
+
+- **macOS:** “Skybox can’t be opened / Apple could not verify…” → System Settings → Privacy & Security →
+  **Open Anyway** (once). If it says the app is damaged: `xattr -dr com.apple.quarantine /Applications/Skybox.app`.
+- **Windows:** SmartScreen “Windows protected your PC” → **More info** → **Run anyway**.
+
+### Building it
+
+```sh
+npm run desktop          # run the desktop app from source
+npm run desktop:dist     # installer for the current OS → desktop/release/
+```
+
+Releases are built by GitHub Actions (`.github/workflows/release.yml`) on macOS and Windows runners:
+push a tag `vX.Y.Z` → installers are attached to a GitHub Release with that version. Running the workflow
+manually builds them as workflow artifacts only. `node desktop/scripts/make-icon.mjs` regenerates the icon.
+
 ## Requirements
 
 Node.js 22+. Demo parsing uses [`@laihoe/demoparser2`](https://github.com/LaihoE/demoparser) (native, prebuilt for macOS/Linux/Windows).
@@ -57,6 +84,11 @@ server/   Fastify API; parsing runs in a worker thread
 web/      React + Canvas 2D viewer
   src/playback/         clock, interpolation, derived state (bomb, clock, score)
   src/render/           canvas layers
+desktop/  Electron app: runs the same server in-process on a random local port
+  src/main.ts           window, server start, native parser location
+  src/preload.ts        window.skybox bridge (file path + token for /api/demos/local)
+  scripts/bundle.mjs    esbuild bundles + web build → desktop/dist
+  scripts/dist.mjs      stage, native parser, electron-builder
 scripts/  fetch-maps
 ```
 

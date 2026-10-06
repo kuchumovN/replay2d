@@ -14,24 +14,40 @@ interface Entry {
 
 const entries = new Map<string, Entry>();
 
+/**
+ * Worker entry. By default a bootstrap registers tsx and loads worker.ts (dev, `npm start`); bundled builds
+ * (desktop) point it at their compiled worker instead.
+ */
+let workerScript: { url: URL; entry?: string } | null = null;
+
+export function setWorkerScript(url: URL) {
+  workerScript = { url };
+}
+
+function defaultWorkerScript() {
+  return {
+    url: new URL('./parse/worker-boot.mjs', import.meta.url),
+    entry: new URL('./parse/worker.ts', import.meta.url).href,
+  };
+}
+
 function evict() {
   const ids = [...entries.keys()];
   while (ids.length > MAX_DEMOS) entries.delete(ids.shift()!);
 }
 
-/** Starts parsing in a worker thread. The demo file is deleted once parsing finishes. */
-export function startParse(path: string, fileName: string): string {
+/** Starts parsing in a worker thread. An uploaded (temporary) demo file is deleted once parsing finishes. */
+export function startParse(path: string, fileName: string, { deleteFile }: { deleteFile: boolean }): string {
   const id = randomUUID();
   const entry: Entry = { status: { state: 'parsing', stage: 'Starting' }, rounds: [] };
   entries.set(id, entry);
   evict();
 
-  const worker = new Worker(new URL('./parse/worker-boot.mjs', import.meta.url), {
-    workerData: { path, fileName, entry: new URL('./parse/worker.ts', import.meta.url).href },
-  });
+  const script = workerScript ?? defaultWorkerScript();
+  const worker = new Worker(script.url, { workerData: { path, fileName, entry: script.entry } });
   const finish = (status: ParseStatus) => {
     entry.status = status;
-    rm(path, { force: true }).catch(() => {});
+    if (deleteFile) rm(path, { force: true }).catch(() => {});
   };
   worker.on('message', (msg: WorkerMessage) => {
     if (msg.type === 'stage') entry.status = { state: 'parsing', stage: msg.stage };

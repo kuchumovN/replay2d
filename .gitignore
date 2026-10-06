@@ -5,3 +5,8 @@ fixtures/*.dem
 *.log
 .DS_Store
 mock_demos/
+desktop/dist/
+desktop/stage/
+desktop/native/
+desktop/release/
+desktop/native-install/

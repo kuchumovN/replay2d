@@ -3,14 +3,21 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "workspaces": ["shared", "server", "web"],
+  "workspaces": [
+    "shared",
+    "server",
+    "web",
+    "desktop"
+  ],
   "scripts": {
     "dev": "concurrently -k -n server,web -c blue,green \"npm:dev -w server\" \"npm:dev -w web\"",
     "build": "npm run build -w web",
     "start": "npm run build && NODE_ENV=production npm run start -w server",
     "test": "vitest run",
-    "typecheck": "tsc -p server && tsc -p web && tsc -p scripts",
-    "fetch-maps": "tsx scripts/fetch-maps.ts"
+    "typecheck": "tsc -p server && tsc -p web && tsc -p scripts && tsc -p desktop",
+    "fetch-maps": "tsx scripts/fetch-maps.ts",
+    "desktop": "npm run start -w desktop",
+    "desktop:dist": "npm run dist -w desktop"
   },
   "devDependencies": {
     "concurrently": "^9.0.0",

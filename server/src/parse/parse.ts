@@ -3,7 +3,8 @@ import { buildMatch, FRAME_STEP, roundStateTicks, SLOW_STEP, type BuiltMatch, ty
 import { gridTicks, sliceRounds } from './rounds.js';
 
 const require = createRequire(import.meta.url);
-const parser = require('@laihoe/demoparser2') as typeof import('@laihoe/demoparser2');
+// Packaged desktop builds ship the native parser outside the bundle and point to it via SKYBOX_DEMOPARSER.
+const parser = require(process.env.SKYBOX_DEMOPARSER ?? '@laihoe/demoparser2') as typeof import('@laihoe/demoparser2');
 
 /** CS2 demos are recorded at 64 ticks per second regardless of server subtick settings. */
 const TICKRATE = 64;

@@ -1,6 +1,7 @@
 import type { MatchMeta } from '@skybox/shared';
 import { useRef, useState } from 'react';
-import { getStatus, uploadDemo } from '../api';
+import { getStatus, openLocalDemo, uploadDemo } from '../api';
+import { desktop } from '../desktop';
 
 const POLL_MS = 400;
 
@@ -16,8 +17,15 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
     if (!file || phase.kind !== 'idle') return;
     setError(null);
     try {
-      setPhase({ kind: 'uploading', fraction: 0 });
-      const id = await uploadDemo(file, (fraction) => setPhase({ kind: 'uploading', fraction }));
+      // The desktop app reads the file in place; the browser has to upload it.
+      const localPath = desktop?.pathForFile(file);
+      let id: string;
+      if (localPath) {
+        id = await openLocalDemo(localPath);
+      } else {
+        setPhase({ kind: 'uploading', fraction: 0 });
+        id = await uploadDemo(file, (fraction) => setPhase({ kind: 'uploading', fraction }));
+      }
       setPhase({ kind: 'parsing', stage: 'Starting' });
       for (;;) {
         const status = await getStatus(id);
