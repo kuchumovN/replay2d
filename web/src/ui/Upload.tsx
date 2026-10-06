@@ -2,6 +2,7 @@ import type { MatchMeta } from '@skybox/shared';
 import { useRef, useState } from 'react';
 import { getStatus, openLocalDemo, uploadDemo } from '../api';
 import { desktop } from '../desktop';
+import { UpdateButton } from './UpdateButton';
 
 const POLL_MS = 400;
 
@@ -43,6 +44,9 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
   const busy = phase.kind !== 'idle';
   return (
     <div className="center">
+      <div className="corner">
+        <UpdateButton />
+      </div>
       <div className="upload-card">
         <h1>
           Skybox <span className="muted">for CS2</span>

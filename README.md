@@ -19,6 +19,10 @@ Download the installer from [Releases](https://github.com/kuchumovN/skybox-cs2/r
 
 Radar images are bundled, so it works offline. Demos are read straight from disk (no copy).
 
+**Updates:** on launch the app checks the latest GitHub Release; the button in the top-right corner shows
+“Update to vX.Y.Z” when there is one (or checks on click). On Windows it downloads the installer, installs silently
+and restarts; on macOS it downloads and opens the `.dmg` — drag Skybox to Applications again.
+
 The builds are not code-signed, so the first launch shows a warning:
 
 - **macOS:** “Skybox can’t be opened / Apple could not verify…” → System Settings → Privacy & Security →

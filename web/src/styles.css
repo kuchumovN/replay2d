@@ -85,6 +85,28 @@ button.ghost {
 
 /* Upload */
 
+.corner {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+}
+
+button.update {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+button.update.available {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0b0e12;
+  font-weight: 600;
+}
+
+button.update.error {
+  color: #ff8a8a;
+}
+
 .upload-card {
   width: min(520px, 100%);
 }

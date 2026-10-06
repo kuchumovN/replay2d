@@ -7,6 +7,7 @@ import { KillFeed } from './KillFeed';
 import { RadarCanvas } from './RadarCanvas';
 import { Scoreboard } from './Scoreboard';
 import { Timeline } from './Timeline';
+import { UpdateButton } from './UpdateButton';
 
 interface Radar {
   map: MapInfo;
@@ -90,6 +91,7 @@ export function Viewer({ meta, onClose }: { meta: MatchMeta; onClose: () => void
           <span className="score-num t">{score.t}</span>
           <span className="team t">{roundMeta.tName}</span>
         </div>
+        <UpdateButton />
       </header>
       <main className="stage">
         <div className="radar-area">

@@ -67,6 +67,7 @@ worker → клиент опрашивает `GET /api/demos/:id` (`ParseStatus`
 | `server/src/app.ts` | `buildServer(options)` — общий для веба и десктопа; `localFileToken` включает `/api/demos/local` |
 | `desktop/src/main.ts` | Electron: сервер в процессе на `127.0.0.1:<random>`, окно, путь к нативному парсеру |
 | `desktop/src/preload.ts` | `window.skybox` = `pathForFile` (webUtils) + токен (через IPC) |
+| `desktop/src/updater.ts` | «Check for updates»: GitHub API `releases/latest`, ассет по суффиксу из `dist.mjs`; Windows — тихая установка `/S --updated --force-run` и выход, macOS — открыть `.dmg`. UI — `web/src/ui/UpdateButton.tsx` (проверка при запуске) |
 | `desktop/scripts/bundle.mjs` | esbuild: `main.mjs`, `worker.mjs` (ESM + require-shim), `preload.cjs`; копирует `web/dist` |
 | `desktop/scripts/dist.mjs` | stage-каталог без node_modules, нативный парсер в `resources/native`, electron-builder |
 | `.github/workflows/release.yml` | сборка на macos-latest + windows-latest; тег `v*` → GitHub Release |
@@ -128,7 +129,8 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 - electron-builder тащит `dependencies` из `desktop/package.json` в приложение → там их нет намеренно (всё в бандле).
 - `asar: false` (воркер и нативный модуль вне архива), `mac.identity: '-'` (ad-hoc, иначе не запустится на
   Apple Silicon), `hardenedRuntime: false` (с ad-hoc подписью блокирует загрузку нативной библиотеки).
-- Версия релиза берётся из тега (`GITHUB_REF_NAME`), локально — из `desktop/package.json`.
+- Версия релиза берётся из тега (`GITHUB_REF_NAME`), локально — из `desktop/package.json`. Обновление в приложении
+  видит только опубликованные релизы (тег `v*`), ручной запуск workflow релиз не создаёт.
 - Проверка упакованного приложения: запустить `Skybox.app/Contents/MacOS/Skybox --remote-debugging-port=9333`,
   подключиться `puppeteer.connect({ browserURL })`, `input[type=file].uploadFile(path)` (webUtils даёт путь).
   Проверять копию из `.dmg` вне проекта — внутри проекта парсер может случайно найтись в корневых node_modules.

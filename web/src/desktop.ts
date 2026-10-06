@@ -4,6 +4,12 @@ export interface DesktopBridge {
   pathForFile(file: File): string;
   /** Token required by the local-file endpoint. */
   token: string;
+  /** App version (x.y.z). */
+  version: string;
+  /** Compares the app with the latest GitHub release. */
+  checkForUpdate(): Promise<{ current: string; latest: string; available: boolean }>;
+  /** Downloads and starts the latest installer: Windows restarts into it, macOS opens the disk image. */
+  installUpdate(onProgress: (fraction: number) => void): Promise<'restarting' | 'opened'>;
 }
 
 declare global {

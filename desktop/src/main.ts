@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import { buildServer } from '../../server/src/app.js';
 import { setWorkerScript } from '../../server/src/store.js';
+import { checkForUpdate, installUpdate } from './updater.js';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const token = randomBytes(24).toString('hex');
@@ -27,6 +28,9 @@ async function start() {
   const port = typeof address === 'object' && address ? address.port : 0;
 
   ipcMain.on('skybox:token', (e) => (e.returnValue = token));
+  ipcMain.on('skybox:version', (e) => (e.returnValue = app.getVersion()));
+  ipcMain.handle('skybox:update-check', () => checkForUpdate());
+  ipcMain.handle('skybox:update-install', (e) => installUpdate((fraction) => e.sender.send('skybox:update-progress', fraction)));
 
   window = new BrowserWindow({
     width: 1440,
