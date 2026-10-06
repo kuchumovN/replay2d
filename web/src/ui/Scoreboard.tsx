@@ -1,7 +1,8 @@
-import { INVENTORY_C4, INVENTORY_GRENADES, SIDE_CT, SIDE_T, type MatchMeta, type Side } from '@skybox/shared';
+import { INVENTORY_C4, INVENTORY_GRENADES, mainWeapon, SIDE_CT, SIDE_T, type MatchMeta, type Side } from '@skybox/shared';
 import { samplePlayer, slowIndex, type PlayerSample } from '../playback/interp';
 import type { PlaybackSnapshot } from '../playback/playback';
 import { bombState } from '../playback/state';
+import { HudIcon } from './HudIcon';
 import { WeaponIcon } from './WeaponIcon';
 
 interface Row {
@@ -15,6 +16,7 @@ interface Row {
   kills: number;
   deaths: number;
   assists: number;
+  weapon: string | null;
   grenades: string[];
   bomb: boolean;
 }
@@ -39,6 +41,7 @@ export function Scoreboard({ snap, meta, names, onSelect }: Props) {
       if (!sample) return;
       const slow = round.slow.find((s) => s.steamid === p.steamid);
       const inventory = slow?.inventory[si] ?? [];
+      const items = sample.alive ? inventory.map((s) => round.strings[s]) : [];
       rows.push({
         steamid: p.steamid,
         name: names.get(p.steamid) ?? p.steamid,
@@ -50,7 +53,8 @@ export function Scoreboard({ snap, meta, names, onSelect }: Props) {
         kills: slow?.kills[si] ?? 0,
         deaths: slow?.deaths[si] ?? 0,
         assists: slow?.assists[si] ?? 0,
-        grenades: sample.alive ? inventory.map((s) => round.strings[s]).filter((s) => INVENTORY_GRENADES.includes(s)) : [],
+        weapon: mainWeapon(items),
+        grenades: items.filter((s) => INVENTORY_GRENADES.includes(s)),
         bomb: bomb?.kind === 'carried' ? bomb.player === p.steamid : sample.alive && inventory.includes(c4) && bomb === null,
       });
     });
@@ -88,7 +92,10 @@ function TeamTable({ title, cls, rows, selected, onSelect }: { title: string; cl
         >
           <div className="hp-bar">
             <div style={{ width: `${r.sample.alive ? r.sample.hp : 0}%` }} />
-            <span>{r.sample.alive ? r.sample.hp : ''}</span>
+            <span>
+              {r.sample.alive ? r.sample.hp : ''}
+              {r.armor > 0 && <HudIcon name={r.helmet ? 'armor_helmet' : 'armor'} title={`Armor ${r.armor}${r.helmet ? ' + helmet' : ''}`} />}
+            </span>
           </div>
           <div className="player-main">
             <div className="player-line">
@@ -98,12 +105,11 @@ function TeamTable({ title, cls, rows, selected, onSelect }: { title: string; cl
               </span>
             </div>
             <div className="player-line small">
-              <span className="weapon-name">{!r.sample.alive ? 'dead' : r.sample.weapon && <WeaponIcon name={r.sample.weapon} />}</span>
+              <span className="weapon-name">{!r.sample.alive ? 'dead' : r.weapon && <WeaponIcon name={r.weapon} />}</span>
               <span className="icons">
                 {r.grenades.map((g, i) => (
                   <WeaponIcon key={i} name={g} className="nade" />
                 ))}
-                {r.armor > 0 && <span className="badge" title={`Armor ${r.armor}`}>{r.helmet ? 'A+H' : 'A'}</span>}
                 {r.defuser && <span className="badge kit" title="Defuse kit">KIT</span>}
                 {r.bomb && <span className="badge c4" title="Bomb">C4</span>}
                 <span className="money">${r.money}</span>

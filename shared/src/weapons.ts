@@ -145,6 +145,24 @@ export function itemWeaponId(nameOrId: string): string {
   return ITEM_NAME_IDS[nameOrId] ?? weaponId(nameOrId);
 }
 
+const PISTOLS = ['glock', 'hkp2000', 'usp_silencer', 'p250', 'fiveseven', 'tec9', 'cz75a', 'deagle', 'revolver', 'elite'];
+
+/**
+ * The weapon to show for a player: primary if they have one, else pistol, else knife.
+ * `items` are item names from the `inventory` prop.
+ */
+export function mainWeapon(items: string[]): string | null {
+  let pistol: string | null = null;
+  let knife: string | null = null;
+  for (const item of items) {
+    const id = itemWeaponId(item);
+    if (isKnife(id)) knife ??= item;
+    else if (PISTOLS.includes(id)) pistol ??= item;
+    else if (DISPLAY_NAMES[id] && !isNonFiring(id)) return item;
+  }
+  return pistol ?? knife;
+}
+
 /** Grenade names as they appear in the `inventory` prop. */
 export const INVENTORY_GRENADES = ['Smoke Grenade', 'Flashbang', 'High Explosive Grenade', 'Molotov', 'Incendiary Grenade', 'Decoy Grenade'];
 export const INVENTORY_C4 = 'C4 Explosive';

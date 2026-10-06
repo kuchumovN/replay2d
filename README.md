@@ -50,7 +50,8 @@ npm run fetch-maps        # radar images + calibration → web/public/maps (not 
 `fetch-maps` downloads from [MurkyYT/cs2-map-icons](https://github.com/MurkyYT/cs2-map-icons), which mirrors the
 overviews from the game depot. Re-run it after map updates; `npm run fetch-maps -- de_nuke` updates selected maps only.
 Radar images are Valve assets. Weapon and grenade icons (`web/src/assets/weapons`) come from
-[lexogrine/cs2-react-hud](https://github.com/lexogrine/cs2-react-hud) (MIT).
+[lexogrine/cs2-react-hud](https://github.com/lexogrine/cs2-react-hud) (MIT); kill feed modifiers and armor icons (`web/src/assets/hud`) are CS2 HUD icons (Valve assets) from
+[Juknum/counter-strike-icons](https://github.com/Juknum/counter-strike-icons).
 
 ## Run
 

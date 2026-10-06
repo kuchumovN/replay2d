@@ -1,6 +1,7 @@
 import { SIDE_CT, type RoundData } from '@skybox/shared';
 import { samplePlayer } from '../playback/interp';
 import { killsUntil } from '../playback/state';
+import { HudIcon } from './HudIcon';
 import { WeaponIcon } from './WeaponIcon';
 
 const MAX_KILLS = 5;
@@ -31,12 +32,13 @@ export function KillFeed({ round, tick, names }: { round: RoundData; tick: numbe
             </span>
           )}
           <span className="weapon">
-            {k.attackerBlind && <span className="tag" title="Attacker was blind">blind</span>}
+            {k.attackerBlind && <HudIcon name="blind_kill" title="Attacker was blind" />}
+            {k.attackerInAir && <HudIcon name="inairkill" title="Attacker was in the air" />}
             <WeaponIcon name={k.weapon} />
-            {k.noScope && <span className="tag">noscope</span>}
-            {k.throughSmoke && <span className="tag">smoke</span>}
-            {k.wallbang && <span className="tag">wall</span>}
-            {k.headshot && <span className="tag hs">HS</span>}
+            {k.noScope && <HudIcon name="noscope" title="No scope" />}
+            {k.throughSmoke && <HudIcon name="smoke_kill" title="Through smoke" />}
+            {k.wallbang && <HudIcon name="penetrate" title="Wallbang" />}
+            {k.headshot && <HudIcon name="icon_headshot" title="Headshot" />}
           </span>
           <span className={sideOf(k.victim, k.tick) ?? ''}>{names.get(k.victim) ?? '?'}</span>
         </div>

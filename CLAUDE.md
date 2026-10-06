@@ -62,7 +62,7 @@ worker → клиент опрашивает `GET /api/demos/:id` (`ParseStatus`
 | `web/src/playback/interp.ts` | интерполяция игроков/гранат, телепорт > 300 ед. не интерполируется, yaw по короткой дуге |
 | `web/src/playback/state.ts` | производное состояние: бомба, ослепление, часы раунда, счёт |
 | `web/src/render/*` | слои canvas: `frame.ts` (оркестратор), `view.ts` (раскладка уровней, zoom/pan), players, grenades, bomb, shots |
-| `web/src/ui/*` | `App` (хэш-роутинг), `Upload`, `Viewer`, `RadarCanvas`, `Scoreboard`, `KillFeed`, `Timeline`, `WeaponIcon` (SVG из `web/src/assets/weapons`, lexogrine/cs2-react-hud, MIT; имя предмета или id события → `itemWeaponId`) |
+| `web/src/ui/*` | `App` (хэш-роутинг), `Upload`, `Viewer`, `RadarCanvas`, `Scoreboard`, `KillFeed`, `Timeline`, `WeaponIcon` (SVG из `web/src/assets/weapons`, lexogrine/cs2-react-hud, MIT; имя предмета или id события → `itemWeaponId`), `HudIcon` (броня и модификаторы килфида из `web/src/assets/hud`, Juknum/counter-strike-icons). В скорборде — основное оружие из инвентаря (`mainWeapon`), не активное |
 | `scripts/fetch-maps.ts`, `map-info.ts` | загрузка радаров, выбор картинки уровня, `maps.json` |
 | `server/src/app.ts` | `buildServer(options)` — общий для веба и десктопа; `localFileToken` включает `/api/demos/local` |
 | `desktop/src/main.ts` | Electron: сервер в процессе на `127.0.0.1:<random>`, окно, путь к нативному парсеру |

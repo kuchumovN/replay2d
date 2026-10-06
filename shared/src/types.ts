@@ -115,6 +115,7 @@ export interface KillEvent {
   throughSmoke: boolean;
   noScope: boolean;
   attackerBlind: boolean;
+  attackerInAir: boolean;
   victimPos: Vec3;
 }
 

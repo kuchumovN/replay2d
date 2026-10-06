@@ -247,6 +247,7 @@ export function convertEvent(e: any): GameEvent | null {
         throughSmoke: !!e.thrusmoke,
         noScope: !!e.noscope,
         attackerBlind: !!e.attackerblind,
+        attackerInAir: !!e.attackerinair,
         victimPos: pos(e, 'user_') ?? { x: 0, y: 0, z: 0 },
       };
     case 'weapon_fire': {

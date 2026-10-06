@@ -275,17 +275,11 @@ button.ghost {
   font-size: 12px;
 }
 
-.tag {
-  font-size: 10px;
-  text-transform: uppercase;
-  background: var(--panel-2);
-  border-radius: 3px;
-  padding: 0 4px;
-  color: var(--muted);
-}
-
-.tag.hs {
-  color: #ff8a8a;
+.hud-icon {
+  display: block;
+  height: 16px;
+  width: auto;
+  flex: none;
 }
 
 /* Scoreboard */
@@ -369,12 +363,18 @@ button.ghost {
 .hp-bar > span {
   position: relative;
   display: flex;
+  flex-direction: column;
+  gap: 1px;
   height: 100%;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+}
+
+.hp-bar .hud-icon {
+  height: 12px;
 }
 
 .player-main {
