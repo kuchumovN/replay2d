@@ -112,6 +112,8 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 - TypeScript 7, Vite 8, Vitest 5, React 19, Fastify 5. В TS 7 сужение `let x: T | null = null` в цикле со switch
   ломается — писать `let x = null as T | null`.
 - `tsx watch` перезапускает сервер при правке → распарсенные демки теряются, нужно загрузить заново.
+- SVG-иконки оружия: каждой нужны `xmlns` и `fill="white"` (в исходном lexogrine у flashbang/hegrenade/smokegrenade их не было,
+  поправлено вручную). Vite встраивает файлы < 4 КБ как `data:`-URI, без `xmlns` такая картинка не грузится.
 
 ## Десктоп: грабли (найдено при сборке)
 
