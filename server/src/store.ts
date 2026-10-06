@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { rm } from 'node:fs/promises';
 import { Worker } from 'node:worker_threads';
 import type { MatchMeta, ParseStatus } from '@skybox/shared';
-import type { WorkerMessage } from './parse/worker.js';
+import type { WorkerData, WorkerMessage } from './parse/worker.js';
 
 /** Parsed demos kept in memory; older ones are evicted. */
 const MAX_DEMOS = 3;
@@ -31,6 +31,11 @@ function defaultWorkerScript() {
   };
 }
 
+export function createWorker(data: WorkerData): Worker {
+  const script = workerScript ?? defaultWorkerScript();
+  return new Worker(script.url, { workerData: { ...data, entry: script.entry } });
+}
+
 function evict() {
   const ids = [...entries.keys()];
   while (ids.length > MAX_DEMOS) entries.delete(ids.shift()!);
@@ -43,8 +48,7 @@ export function startParse(path: string, fileName: string, { deleteFile }: { del
   entries.set(id, entry);
   evict();
 
-  const script = workerScript ?? defaultWorkerScript();
-  const worker = new Worker(script.url, { workerData: { path, fileName, entry: script.entry } });
+  const worker = createWorker({ mode: 'match', path, fileName });
   const finish = (status: ParseStatus) => {
     entry.status = status;
     if (deleteFile) rm(path, { force: true }).catch(() => {});
@@ -52,7 +56,7 @@ export function startParse(path: string, fileName: string, { deleteFile }: { del
   worker.on('message', (msg: WorkerMessage) => {
     if (msg.type === 'stage') entry.status = { state: 'parsing', stage: msg.stage };
     else if (msg.type === 'error') finish({ state: 'error', error: msg.message });
-    else {
+    else if (msg.type === 'done') {
       entry.rounds = msg.rounds;
       finish({ state: 'ready', meta: { ...(msg.meta as Omit<MatchMeta, 'id'>), id } });
     }

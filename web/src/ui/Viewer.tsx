@@ -1,37 +1,14 @@
-import type { MapInfo, MatchMeta } from '@skybox/shared';
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { getMaps, loadImage } from '../api';
+import type { MatchMeta } from '@skybox/shared';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { Playback } from '../playback/playback';
 import { scoreAt } from '../playback/state';
 import { KillFeed } from './KillFeed';
 import { RadarCanvas } from './RadarCanvas';
 import { Scoreboard } from './Scoreboard';
 import { Timeline } from './Timeline';
+import { useRadar } from './useRadar';
+import { SettingsButton } from './Settings';
 import { UpdateButton } from './UpdateButton';
-
-interface Radar {
-  map: MapInfo;
-  images: HTMLImageElement[];
-}
-
-function useRadar(mapName: string) {
-  const [radar, setRadar] = useState<Radar | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const maps = await getMaps();
-      const map = maps[mapName];
-      if (!map) throw new Error(`No radar for ${mapName}. Run \`npm run fetch-maps\` to download radar images, then reload.`);
-      const images = await Promise.all(map.levels.map((l) => loadImage(`/maps/${l.image}`)));
-      if (!cancelled) setRadar({ map, images });
-    })().catch((err: Error) => !cancelled && setError(err.message));
-    return () => {
-      cancelled = true;
-    };
-  }, [mapName]);
-  return { radar, error };
-}
 
 function isTyping(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null;
@@ -91,7 +68,10 @@ export function Viewer({ meta, onClose }: { meta: MatchMeta; onClose: () => void
           <span className="score-num t">{score.t}</span>
           <span className="team t">{roundMeta.tName}</span>
         </div>
-        <UpdateButton />
+        <div className="topbar-end">
+          <UpdateButton />
+          <SettingsButton />
+        </div>
       </header>
       <main className="stage">
         <div className="radar-area">

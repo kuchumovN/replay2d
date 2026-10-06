@@ -52,7 +52,23 @@ export function drawFrame(f: FrameInput) {
       }
     : null;
 
-  // Each level is clipped to its own viewport; entities are drawn on the level matching their height.
+  drawRadar(ctx, view, map, f.images);
+
+  if (!dc) return;
+  ctx.save();
+  clipToLevels(ctx, view);
+  drawAreaEffects(dc);
+  drawDeaths(dc);
+  drawGrenadeTracks(dc);
+  drawShots(dc);
+  drawBomb(dc);
+  drawPlayers(dc);
+  drawBursts(dc);
+  ctx.restore();
+}
+
+/** Radar images, one per level; each level is clipped to its own viewport. */
+export function drawRadar(ctx: CanvasRenderingContext2D, view: View, map: MapInfo, images: HTMLImageElement[]) {
   view.rects.forEach((rect, level) => {
     const clip = view.clips[level];
     ctx.save();
@@ -64,7 +80,7 @@ export function drawFrame(f: FrameInput) {
       ctx.fillRect(rect.x, rect.y, rect.size, rect.size);
     }
     const tl = view.radarToScreen(level, 0, 0);
-    const img = f.images[level];
+    const img = images[level];
     if (img) ctx.drawImage(img, tl.x, tl.y, rect.size * view.zoom, rect.size * view.zoom);
     if (map.levels.length > 1) {
       ctx.fillStyle = 'rgba(255,255,255,0.55)';
@@ -75,21 +91,13 @@ export function drawFrame(f: FrameInput) {
     }
     ctx.restore();
   });
+}
 
-  if (!dc) return;
-  // Entities may cross level borders; clip to the union of viewports.
-  ctx.save();
+/** Entities drawn on the radar may cross level borders; clip to the union of viewports. */
+export function clipToLevels(ctx: CanvasRenderingContext2D, view: View) {
   ctx.beginPath();
   for (const c of view.clips) ctx.rect(c.x, c.y, c.w, c.h);
   ctx.clip();
-  drawAreaEffects(dc);
-  drawDeaths(dc);
-  drawGrenadeTracks(dc);
-  drawShots(dc);
-  drawBomb(dc);
-  drawPlayers(dc);
-  drawBursts(dc);
-  ctx.restore();
 }
 
 function capitalize(s: string) {

@@ -21,7 +21,7 @@ if (!app.requestSingleInstanceLock()) app.quit();
 let window: BrowserWindow | null = null;
 
 async function start() {
-  const server = await buildServer({ webRoot: join(here, 'web'), localFileToken: token });
+  const server = await buildServer({ webRoot: join(here, 'web'), localFileToken: token, dataDir: app.getPath('userData') });
   // Random free port on loopback only.
   await server.listen({ port: 0, host: '127.0.0.1' });
   const address = server.server.address();

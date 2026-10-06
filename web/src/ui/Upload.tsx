@@ -2,6 +2,8 @@ import type { MatchMeta } from '@skybox/shared';
 import { useRef, useState } from 'react';
 import { getStatus, openLocalDemo, uploadDemo } from '../api';
 import { desktop } from '../desktop';
+import { useSettings } from '../settings';
+import { SettingsButton } from './Settings';
 import { UpdateButton } from './UpdateButton';
 
 const POLL_MS = 400;
@@ -9,6 +11,7 @@ const POLL_MS = 400;
 type Phase = { kind: 'idle' } | { kind: 'uploading'; fraction: number } | { kind: 'parsing'; stage: string };
 
 export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) => void; initialError: string | null }) {
+  const { analysisEnabled } = useSettings();
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' });
   const [error, setError] = useState<string | null>(initialError);
   const [dragging, setDragging] = useState(false);
@@ -46,6 +49,7 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
     <div className="center">
       <div className="corner">
         <UpdateButton />
+        <SettingsButton />
       </div>
       <div className="upload-card">
         <h1>
@@ -91,6 +95,11 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
           )}
         </div>
         {error && <div className="error">{error}</div>}
+        {analysisEnabled && (
+          <button className="analysis-link" onClick={() => (location.hash = '#/analysis')}>
+            Route analysis →
+          </button>
+        )}
         <input ref={input} type="file" accept=".dem" hidden onChange={(e) => handle(e.target.files?.[0])} />
       </div>
     </div>

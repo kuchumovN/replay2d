@@ -5,7 +5,8 @@ import { basename, isAbsolute, join } from 'node:path';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import fastifyStatic from '@fastify/static';
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyInstance, type FastifyRequest } from 'fastify';
+import { registerAnalysis } from './analysis/routes.js';
 import { getRound, getStatus, startParse } from './store.js';
 
 const MAX_UPLOAD_BYTES = 2 * 1024 ** 3;
@@ -21,7 +22,11 @@ export interface ServerOptions {
    * this token so other local pages cannot make the app read arbitrary files.
    */
   localFileToken?: string;
+  /** Where settings and route-analysis data are stored; without it those endpoints are not registered. */
+  dataDir?: string;
 }
+
+export type DemoSource = { path: string; fileName: string } | { code: number; error: string };
 
 class TooLargeError extends Error {}
 
@@ -46,7 +51,8 @@ export async function buildServer(options: ServerOptions = {}): Promise<FastifyI
   // Uploads are sent as a raw body and streamed straight to disk.
   app.addContentTypeParser('application/octet-stream', (_req, payload, done) => done(null, payload));
 
-  app.post('/api/demos', async (req, reply) => {
+  /** Streams a raw-body upload to a temporary file and validates it. */
+  async function receiveUpload(req: FastifyRequest): Promise<DemoSource> {
     const fileName = String((req.query as Record<string, string>).name ?? 'demo.dem');
     await mkdir(UPLOAD_DIR, { recursive: true });
     const path = join(UPLOAD_DIR, `${Date.now()}-${Math.random().toString(36).slice(2)}.dem`);
@@ -63,30 +69,44 @@ export async function buildServer(options: ServerOptions = {}): Promise<FastifyI
       const problem = received === 0 ? 'Empty file.' : await checkDemoMagic(path);
       if (problem) {
         await rm(path, { force: true });
-        return reply.code(400).send({ error: problem });
+        return { code: 400, error: problem };
       }
     } catch (err) {
       await rm(path, { force: true });
-      if (err instanceof TooLargeError) return reply.code(413).send({ error: 'Demo is larger than 2 GB.' });
+      if (err instanceof TooLargeError) return { code: 413, error: 'Demo is larger than 2 GB.' };
       throw err;
     }
-    return { id: startParse(path, fileName, { deleteFile: true }) };
+    return { path, fileName };
+  }
+
+  /** Desktop mode: validates a demo path sent by the app window. */
+  async function localFile(req: FastifyRequest): Promise<DemoSource> {
+    if (!options.localFileToken || req.headers[LOCAL_TOKEN_HEADER] !== options.localFileToken) return { code: 403, error: 'Forbidden.' };
+    const path = (req.body as { path?: unknown } | null)?.path;
+    if (typeof path !== 'string' || !isAbsolute(path)) return { code: 400, error: 'Invalid file path.' };
+    const info = await stat(path).catch(() => null);
+    if (!info?.isFile()) return { code: 400, error: 'File not found.' };
+    if (info.size === 0) return { code: 400, error: 'Empty file.' };
+    const problem = await checkDemoMagic(path);
+    if (problem) return { code: 400, error: problem };
+    return { path, fileName: basename(path) };
+  }
+
+  app.post('/api/demos', async (req, reply) => {
+    const src = await receiveUpload(req);
+    if ('error' in src) return reply.code(src.code).send({ error: src.error });
+    return { id: startParse(src.path, src.fileName, { deleteFile: true }) };
   });
 
   if (options.localFileToken) {
-    const token = options.localFileToken;
     app.post('/api/demos/local', async (req, reply) => {
-      if (req.headers[LOCAL_TOKEN_HEADER] !== token) return reply.code(403).send({ error: 'Forbidden.' });
-      const path = (req.body as { path?: unknown } | null)?.path;
-      if (typeof path !== 'string' || !isAbsolute(path)) return reply.code(400).send({ error: 'Invalid file path.' });
-      const info = await stat(path).catch(() => null);
-      if (!info?.isFile()) return reply.code(400).send({ error: 'File not found.' });
-      if (info.size === 0) return reply.code(400).send({ error: 'Empty file.' });
-      const problem = await checkDemoMagic(path);
-      if (problem) return reply.code(400).send({ error: problem });
-      return { id: startParse(path, basename(path), { deleteFile: false }) };
+      const src = await localFile(req);
+      if ('error' in src) return reply.code(src.code).send({ error: src.error });
+      return { id: startParse(src.path, src.fileName, { deleteFile: false }) };
     });
   }
+
+  if (options.dataDir) registerAnalysis(app, options.dataDir, { receiveUpload, localFile: options.localFileToken ? localFile : null });
 
   app.get('/api/demos/:id', async (req, reply) => {
     const status = getStatus((req.params as { id: string }).id);
