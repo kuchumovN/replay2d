@@ -66,7 +66,8 @@ npm run build-wasm        # browser demo parser → web/src/parse/demoparser (no
 (lets it run on wasm) and builds the bindings in `wasm/src/lib.rs`, which mirror the Node ones.
 
 `fetch-maps` downloads from [MurkyYT/cs2-map-icons](https://github.com/MurkyYT/cs2-map-icons), which mirrors the
-overviews from the game depot. Re-run it after map updates; `npm run fetch-maps -- de_nuke` updates selected maps only.
+overviews from the game depot, at a pinned commit (`SOURCE_COMMIT` in `scripts/fetch-maps.ts`). To pick up new maps
+or radar updates, set it to the latest commit and re-run; `npm run fetch-maps -- de_nuke` updates selected maps only.
 Radar images are Valve assets. Weapon and grenade icons (`web/src/assets/weapons`) come from
 [lexogrine/cs2-react-hud](https://github.com/lexogrine/cs2-react-hud) (MIT); kill feed modifiers and armor icons (`web/src/assets/hud`) are CS2 HUD icons (Valve assets) from
 [Juknum/counter-strike-icons](https://github.com/Juknum/counter-strike-icons).

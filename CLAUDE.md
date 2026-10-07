@@ -83,7 +83,7 @@ npm workspaces: `shared/` (типы + пайплайн парсинга), `serve
 | `web/src/playback/state.ts` | производное состояние: бомба, ослепление, часы раунда, счёт |
 | `web/src/render/*` | слои canvas: `frame.ts` (оркестратор), `view.ts` (раскладка уровней, zoom/pan), players, grenades, bomb, shots |
 | `web/src/ui/*` | `App` (хэш-роутинг), `Upload`, `Viewer`, `RadarCanvas`, `Scoreboard`, `KillFeed`, `Timeline`, `WeaponIcon` (SVG из `web/src/assets/weapons`, lexogrine/cs2-react-hud, MIT; имя предмета или id события → `itemWeaponId`), `HudIcon` (броня и модификаторы килфида из `web/src/assets/hud`, Juknum/counter-strike-icons). В скорборде — основное оружие из инвентаря (`mainWeapon`), не активное |
-| `scripts/fetch-maps.ts`, `map-info.ts` | загрузка радаров, выбор картинки уровня, `maps.json` |
+| `scripts/fetch-maps.ts`, `map-info.ts` | загрузка радаров, выбор картинки уровня, `maps.json`. Источник закреплён на коммите (`SOURCE_COMMIT`); имена карт/секций из чужого индекса проходят только `[a-z0-9_]` (идут в пути файлов), URL строится сами из имени файла, скачанное проверяется на сигнатуру PNG |
 | `server/src/app.ts` | `buildServer({ localFileToken, webRoot })` — бэкенд десктопа: `/api/demos/local`, статус, раунды, раздача `web/dist` |
 | `desktop/src/main.ts` | Electron: сервер в процессе на `127.0.0.1:<random>`, окно, путь к нативному парсеру |
 | `desktop/src/preload.ts` | `window.replay2d` = `pathForFile` (webUtils) + токен (через IPC) |
@@ -193,10 +193,17 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 Сделано и проверено: весь MVP, на трёх реальных демках (раунды, счёт, смена сторон, бомба — 0 расхождений с инвентарём).
 Десктоп: macOS `.dmg` собран и проверен (установка из dmg, открытие демок); Windows — только через CI.
 Браузерный парсинг (WASM): проверен в headless Chrome на про-демках Mirage и Nuke (два уровня) и CS:GO-демке;
-десктоп после переделки проверен из исходников (`npm run desktop`), `.dmg` и CI-job `wasm` ещё не запускались.
+релиз v0.3.0 (Replay2D) собран в CI; `.dmg` из релиза проверен (запуск копии вне проекта, нативный парсинг
+про-демки, версия 0.3.0). Windows-установщик собран, но не запускался.
 
 Публикация: `pages.yml` = `wasm.yml` (переиспользуемый, общий с `release.yml`) → typecheck/test/fetch-maps/build →
 `actions/deploy-pages`. Pages в репо включён с `build_type=workflow`.
+
+Безопасность (разбор 2026-10-07): пользователь включил 2FA и правила защиты `main`/тегов `v*` на GitHub;
+закрепление `cs2-map-icons` сделано. Предложены, но не сделаны: замена `softprops/action-gh-release` на
+`gh release create` и закрепление actions по SHA, проверка sha256 у wasm-pack/protoc, `openExternal` только для
+`https://`. Обновлятор на Windows молча ставит неподписанный установщик из последнего релиза — главный риск при
+взломе аккаунта; полностью закрывается только подписью кода.
 
 Не проверено / идеи (согласовывать с пользователем перед реализацией):
 1. **Многоуровневые карты** — Nuke на реальной демке открывается (два уровня), но границы `AltitudeMin/Max` и
