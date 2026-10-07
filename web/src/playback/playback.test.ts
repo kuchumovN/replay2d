@@ -1,8 +1,8 @@
-import type { MapInfo, RoundData, RoundMeta } from '@replay2d/shared';
+import { SIDE_CT, type MapInfo, type PlayerFrames, type RoundData, type RoundMeta } from '@replay2d/shared';
 import { describe, expect, it } from 'vitest';
 import { levelIndex, worldToRadar } from '../map/transform';
 import { framePos, lerpAngle, sampleGrenade, samplePlayer } from './interp';
-import { blindAmount, bombState, formatClock, roundClock, scoreAt } from './state';
+import { blindAmount, bombState, effectSide, formatClock, roundClock, scoreAt } from './state';
 
 const nuke: MapInfo = {
   name: 'de_nuke',
@@ -183,5 +183,18 @@ describe('round state', () => {
     expect(formatClock(115)).toBe('1:55');
     expect(formatClock(9.2)).toBe('0:10');
     expect(formatClock(0)).toBe('0:00');
+  });
+});
+
+describe('effectSide', () => {
+  it('takes the side of whoever threw the grenade at detonation', () => {
+    const base = makeRound();
+    const ct: PlayerFrames = { ...base.players[0], steamid: 'b', side: base.players[0].side.map(() => SIDE_CT) };
+    const round = makeRound({ players: [...base.players, ct] });
+    const smoke = (thrower: string | null) => ({ type: 'smoke' as const, thrower, startTick: 102, endTick: 108, pos: { x: 0, y: 0, z: 0 } });
+    expect(effectSide(round, smoke('a'))).toBe(2);
+    expect(effectSide(round, smoke('b'))).toBe(3);
+    expect(effectSide(round, smoke('gone'))).toBeNull();
+    expect(effectSide(round, smoke(null))).toBeNull();
   });
 });

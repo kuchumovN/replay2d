@@ -3,12 +3,30 @@ import {
   SIDE_CT,
   type BlindEvent,
   type BombEvent,
+  type GrenadeEffect,
   type KillEvent,
   type RoundData,
   type RoundMeta,
+  type Side,
   type Vec3,
 } from '@replay2d/shared';
-import { slowIndex } from './interp';
+import { samplePlayer, slowIndex } from './interp';
+
+const effectSides = new WeakMap<GrenadeEffect, Side | null>();
+
+/**
+ * Side of the player who threw a grenade, as of its detonation. The event carries the thrower, not the buyer, so an
+ * enemy smoke picked up and thrown counts for the thrower's side. null if the thrower is not in the round.
+ */
+export function effectSide(round: RoundData, fx: GrenadeEffect): Side | null {
+  let side = effectSides.get(fx);
+  if (side === undefined) {
+    const i = fx.thrower ? round.players.findIndex((p) => p.steamid === fx.thrower) : -1;
+    side = i < 0 ? null : (samplePlayer(round, i, fx.startTick)?.side ?? null);
+    effectSides.set(fx, side);
+  }
+  return side;
+}
 
 const PLANT_SECONDS = 3.2;
 const DEFUSE_SECONDS = 10;

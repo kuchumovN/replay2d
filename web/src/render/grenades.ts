@@ -1,7 +1,8 @@
-import type { GrenadeType } from '@replay2d/shared';
+import { SIDE_CT, SIDE_T, type GrenadeType, type Side } from '@replay2d/shared';
 import { worldLength } from '../map/transform';
 import { sampleGrenade } from '../playback/interp';
-import { sideColor, type DrawContext } from './context';
+import { effectSide } from '../playback/state';
+import { COLORS, type DrawContext } from './context';
 
 const TRAIL_COLORS: Record<GrenadeType, string> = {
   smoke: '#d8dde3',
@@ -9,6 +10,13 @@ const TRAIL_COLORS: Record<GrenadeType, string> = {
   he: '#ff6b5a',
   molotov: '#ff9a3c',
   decoy: '#8fd18f',
+};
+
+/** Smokes are tinted by the thrower's side; unknown thrower stays neutral grey. */
+const SMOKE_LOOK: Record<Side | 'none', { fill: string; ring: string | null; text: string }> = {
+  [SIDE_CT]: { fill: 'rgba(160, 196, 226, 0.78)', ring: COLORS.ct, text: 'rgba(20, 40, 60, 0.9)' },
+  [SIDE_T]: { fill: 'rgba(226, 204, 150, 0.78)', ring: COLORS.t, text: 'rgba(60, 44, 10, 0.9)' },
+  none: { fill: 'rgba(205, 210, 216, 0.72)', ring: null, text: 'rgba(40, 44, 52, 0.9)' },
 };
 
 /** Effect radii in world units. */
@@ -60,20 +68,21 @@ export function drawAreaEffects(dc: DrawContext) {
     const left = (fx.endTick - tick) / dc.meta.tickrate;
     const grow = Math.min(1, age / 0.75);
     const fade = Math.min(1, left / 1.5);
-    const thrower = fx.thrower ? dc.players.get(fx.thrower)?.side : undefined;
-
     if (fx.type === 'smoke') {
+      const look = SMOKE_LOOK[effectSide(round, fx) ?? 'none'];
       const radius = worldLength(map, SMOKE_RADIUS) * unit * (0.6 + 0.4 * grow);
       ctx.globalAlpha = fade;
-      ctx.fillStyle = 'rgba(205, 210, 216, 0.72)';
+      ctx.fillStyle = look.fill;
       ctx.beginPath();
       ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = sideColor(thrower, true);
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      if (look.ring) {
+        ctx.strokeStyle = look.ring;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
       // Seconds left in the smoke.
-      ctx.fillStyle = 'rgba(40, 44, 52, 0.9)';
+      ctx.fillStyle = look.text;
       ctx.font = `600 ${Math.max(9, Math.min(12, radius * 0.45))}px system-ui, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
