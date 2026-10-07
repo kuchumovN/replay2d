@@ -1,4 +1,4 @@
-import type { MatchMeta, RoundData } from '@skybox/shared';
+import type { MatchMeta, RoundData } from '@replay2d/shared';
 import { getRound } from '../api';
 
 export const SPEEDS = [0.25, 0.5, 1, 2, 4, 8];

@@ -1,4 +1,4 @@
-import { SIDE_CT, type MatchMeta, type RoundEndKind, type RoundMeta } from '@skybox/shared';
+import { SIDE_CT, type MatchMeta, type RoundEndKind, type RoundMeta } from '@replay2d/shared';
 import { useRef } from 'react';
 import { samplePlayer } from '../playback/interp';
 import { SPEEDS, type Playback, type PlaybackSnapshot } from '../playback/playback';

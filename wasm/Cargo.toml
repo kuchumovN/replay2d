@@ -1,7 +1,7 @@
 # Browser build of demoparser2. Mirrors the Node bindings (same parser settings and output shapes) so the web
 # app can reuse the server's parsing pipeline. Built by `npm run build-wasm` (scripts/build-wasm.sh).
 [package]
-name = "skybox-demoparser"
+name = "replay2d-demoparser"
 version = "0.1.0"
 edition = "2021"
 publish = false

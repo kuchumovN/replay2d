@@ -2,11 +2,11 @@ import { existsSync } from 'node:fs';
 import { open, stat } from 'node:fs/promises';
 import { basename, isAbsolute } from 'node:path';
 import fastifyStatic from '@fastify/static';
-import { checkDemoMagic } from '@skybox/shared/parse';
+import { checkDemoMagic } from '@replay2d/shared/parse';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { getRound, getStatus, startParse } from './store.js';
 
-export const LOCAL_TOKEN_HEADER = 'x-skybox-token';
+export const LOCAL_TOKEN_HEADER = 'x-replay2d-token';
 
 /**
  * Backend of the desktop app: parses demos with the native parser straight from disk (the browser build parses

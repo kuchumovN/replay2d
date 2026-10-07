@@ -95,7 +95,7 @@ export function UpdateButton() {
     case 'opened':
       return (
         <button className="ghost update" disabled>
-          Drag Skybox to Applications to finish
+          Drag Replay2D to Applications to finish
         </button>
       );
     case 'error':

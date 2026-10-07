@@ -1,5 +1,5 @@
 {
-  "name": "@skybox/server",
+  "name": "@replay2d/server",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -7,7 +7,7 @@
     "@fastify/multipart": "^10.1.2",
     "@fastify/static": "^10.1.5",
     "@laihoe/demoparser2": "^0.42.0",
-    "@skybox/shared": "*",
+    "@replay2d/shared": "*",
     "fastify": "^5.12.5",
     "tsx": "^4.23.15"
   }

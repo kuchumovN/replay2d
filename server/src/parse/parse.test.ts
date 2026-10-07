@@ -1,15 +1,15 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import type { BuiltMatch } from '@skybox/shared/parse';
+import type { BuiltMatch } from '@replay2d/shared/parse';
 import { parseDemoFile } from './parse.js';
 
 /**
- * Runs the whole pipeline on a real demo. Uses SKYBOX_TEST_DEMO or fixtures/test_demo.dem (the public
+ * Runs the whole pipeline on a real demo. Uses REPLAY2D_TEST_DEMO or fixtures/test_demo.dem (the public
  * test demo from the demoparser repo: de_mirage, 10 rounds, T win 8:2 by surrender). Skipped if missing.
  */
-const demo = process.env.SKYBOX_TEST_DEMO ?? fileURLToPath(new URL('../../../fixtures/test_demo.dem', import.meta.url));
-const isDefaultFixture = !process.env.SKYBOX_TEST_DEMO;
+const demo = process.env.REPLAY2D_TEST_DEMO ?? fileURLToPath(new URL('../../../fixtures/test_demo.dem', import.meta.url));
+const isDefaultFixture = !process.env.REPLAY2D_TEST_DEMO;
 
 describe.skipIf(!existsSync(demo))('parseDemo (real demo)', () => {
   // Parsed in beforeAll: the describe body also runs for skipped suites (during collection).

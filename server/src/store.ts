@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Worker } from 'node:worker_threads';
-import type { MatchMeta, ParseStatus } from '@skybox/shared';
+import type { MatchMeta, ParseStatus } from '@replay2d/shared';
 import type { WorkerMessage } from './parse/worker.js';
 
 /** Parsed demos kept in memory; older ones are evicted. */

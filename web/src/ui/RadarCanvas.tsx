@@ -1,4 +1,4 @@
-import type { MapInfo } from '@skybox/shared';
+import type { MapInfo } from '@replay2d/shared';
 import { useEffect, useRef } from 'react';
 import type { Playback } from '../playback/playback';
 import { drawFrame } from '../render/frame';

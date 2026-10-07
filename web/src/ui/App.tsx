@@ -1,4 +1,4 @@
-import type { MatchMeta } from '@skybox/shared';
+import type { MatchMeta } from '@replay2d/shared';
 import { useEffect, useState } from 'react';
 import { getStatus } from '../api';
 import { Upload } from './Upload';

@@ -1,4 +1,4 @@
-import { checkDemoMagic, DemoError, parseDemo, type BuiltMatch } from '@skybox/shared/parse';
+import { checkDemoMagic, DemoError, parseDemo, type BuiltMatch } from '@replay2d/shared/parse';
 import init, { DemoFile } from './demoparser/demoparser.js';
 import { loadDemoFile, wasmParser } from './wasm';
 

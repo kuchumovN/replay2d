@@ -1,4 +1,4 @@
-import { INVENTORY_C4, INVENTORY_GRENADES, mainWeapon, SIDE_CT, SIDE_T, type MatchMeta, type Side } from '@skybox/shared';
+import { INVENTORY_C4, INVENTORY_GRENADES, mainWeapon, SIDE_CT, SIDE_T, type MatchMeta, type Side } from '@replay2d/shared';
 import { samplePlayer, slowIndex, type PlayerSample } from '../playback/interp';
 import type { PlaybackSnapshot } from '../playback/playback';
 import { bombState } from '../playback/state';

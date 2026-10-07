@@ -1,4 +1,4 @@
-import { SIDE_CT, type MapInfo, type MatchMeta, type RoundData, type Side } from '@skybox/shared';
+import { SIDE_CT, type MapInfo, type MatchMeta, type RoundData, type Side } from '@replay2d/shared';
 import type { PlayerSample } from '../playback/interp';
 import type { BombState } from '../playback/state';
 import type { View } from './view';

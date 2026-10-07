@@ -1,4 +1,4 @@
-import type { MapInfo, RoundData, RoundMeta } from '@skybox/shared';
+import type { MapInfo, RoundData, RoundMeta } from '@replay2d/shared';
 import { describe, expect, it } from 'vitest';
 import { levelIndex, worldToRadar } from '../map/transform';
 import { framePos, lerpAngle, sampleGrenade, samplePlayer } from './interp';

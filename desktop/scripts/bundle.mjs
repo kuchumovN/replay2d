@@ -25,7 +25,7 @@ await build({
   outExtension: { '.js': '.mjs' },
   format: 'esm',
   banner: { js: requireShim },
-  // The native parser is resolved at runtime (SKYBOX_DEMOPARSER in packaged builds).
+  // The native parser is resolved at runtime (REPLAY2D_DEMOPARSER in packaged builds).
   external: ['electron', '@laihoe/demoparser2'],
 });
 

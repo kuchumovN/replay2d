@@ -1,4 +1,4 @@
-import type { GrenadeTrack, RoundData, Side } from '@skybox/shared';
+import type { GrenadeTrack, RoundData, Side } from '@replay2d/shared';
 
 /** Movement above this between two frames is a respawn/teleport and is not interpolated. */
 const TELEPORT_DISTANCE = 300;

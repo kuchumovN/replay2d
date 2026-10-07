@@ -1,5 +1,5 @@
 {
-  "name": "@skybox/desktop",
+  "name": "@replay2d/desktop",
   "private": true,
   "version": "0.2.0",
   "type": "module",

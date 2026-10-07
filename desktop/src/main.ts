@@ -12,7 +12,7 @@ const token = randomBytes(24).toString('hex');
 
 // Packaged builds keep the native parser in resources/native (outside the app bundle).
 const packagedParser = join(process.resourcesPath ?? '', 'native', 'demoparser2');
-if (app.isPackaged && existsSync(packagedParser)) process.env.SKYBOX_DEMOPARSER = packagedParser;
+if (app.isPackaged && existsSync(packagedParser)) process.env.REPLAY2D_DEMOPARSER = packagedParser;
 
 setWorkerScript(new URL('./worker.mjs', import.meta.url));
 
@@ -27,17 +27,17 @@ async function start() {
   const address = server.server.address();
   const port = typeof address === 'object' && address ? address.port : 0;
 
-  ipcMain.on('skybox:token', (e) => (e.returnValue = token));
-  ipcMain.on('skybox:version', (e) => (e.returnValue = app.getVersion()));
-  ipcMain.handle('skybox:update-check', () => checkForUpdate());
-  ipcMain.handle('skybox:update-install', (e) => installUpdate((fraction) => e.sender.send('skybox:update-progress', fraction)));
+  ipcMain.on('replay2d:token', (e) => (e.returnValue = token));
+  ipcMain.on('replay2d:version', (e) => (e.returnValue = app.getVersion()));
+  ipcMain.handle('replay2d:update-check', () => checkForUpdate());
+  ipcMain.handle('replay2d:update-install', (e) => installUpdate((fraction) => e.sender.send('replay2d:update-progress', fraction)));
 
   window = new BrowserWindow({
     width: 1440,
     height: 920,
     minWidth: 900,
     minHeight: 600,
-    title: 'Skybox',
+    title: 'Replay2D',
     backgroundColor: '#0b0e12',
     show: false,
     webPreferences: {

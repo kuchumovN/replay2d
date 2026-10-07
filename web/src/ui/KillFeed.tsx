@@ -1,4 +1,4 @@
-import { SIDE_CT, type RoundData } from '@skybox/shared';
+import { SIDE_CT, type RoundData } from '@replay2d/shared';
 import { samplePlayer } from '../playback/interp';
 import { killsUntil } from '../playback/state';
 import { HudIcon } from './HudIcon';

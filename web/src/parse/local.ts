@@ -1,4 +1,4 @@
-import type { MatchMeta, RoundData } from '@skybox/shared';
+import type { MatchMeta, RoundData } from '@replay2d/shared';
 import type { WorkerMessage } from './worker';
 
 export type ParseProgress = { kind: 'reading'; fraction: number } | { kind: 'parsing'; stage: string };

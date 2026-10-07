@@ -1,9 +1,9 @@
 import { createRequire } from 'node:module';
-import { parseDemo, type BuiltMatch, type Columns } from '@skybox/shared/parse';
+import { parseDemo, type BuiltMatch, type Columns } from '@replay2d/shared/parse';
 
 const require = createRequire(import.meta.url);
-// Packaged desktop builds ship the native parser outside the bundle and point to it via SKYBOX_DEMOPARSER.
-const parser = require(process.env.SKYBOX_DEMOPARSER ?? '@laihoe/demoparser2') as typeof import('@laihoe/demoparser2');
+// Packaged desktop builds ship the native parser outside the bundle and point to it via REPLAY2D_DEMOPARSER.
+const parser = require(process.env.REPLAY2D_DEMOPARSER ?? '@laihoe/demoparser2') as typeof import('@laihoe/demoparser2');
 
 export function parseDemoFile(path: string, fileName: string, onStage: (stage: string) => void): BuiltMatch {
   return parseDemo(

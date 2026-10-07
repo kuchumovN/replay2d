@@ -1,4 +1,4 @@
-import { INVENTORY_C4, INVENTORY_GRENADES, itemWeaponId, mainWeapon } from '@skybox/shared';
+import { INVENTORY_C4, INVENTORY_GRENADES, itemWeaponId, mainWeapon } from '@replay2d/shared';
 import { describe, expect, it } from 'vitest';
 
 const icons = new Set(Object.keys(import.meta.glob('../assets/weapons/*.svg')).map((p) => p.slice(p.lastIndexOf('/') + 1, -'.svg'.length)));

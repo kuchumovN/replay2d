@@ -1,5 +1,5 @@
 import { parentPort, workerData } from 'node:worker_threads';
-import { DemoError } from '@skybox/shared/parse';
+import { DemoError } from '@replay2d/shared/parse';
 import { parseDemoFile } from './parse.js';
 
 export type WorkerMessage =

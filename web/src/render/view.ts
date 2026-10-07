@@ -1,4 +1,4 @@
-import type { MapInfo } from '@skybox/shared';
+import type { MapInfo } from '@replay2d/shared';
 import { levelIndex, RADAR_SIZE, worldToRadar } from '../map/transform';
 
 const MIN_ZOOM = 1;

@@ -7,7 +7,7 @@ import {
   type RoundData,
   type RoundMeta,
   type Vec3,
-} from '@skybox/shared';
+} from '@replay2d/shared';
 import { slowIndex } from './interp';
 
 const PLANT_SECONDS = 3.2;

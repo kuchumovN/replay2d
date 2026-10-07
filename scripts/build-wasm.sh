@@ -24,12 +24,12 @@ fetch() { # <repo> <commit> <dir>
   git -C "$3" checkout -q FETCH_HEAD
 }
 
-if [[ "$(cat "$VENDOR/.skybox-stamp" 2>/dev/null)" != "$STAMP" ]]; then
+if [[ "$(cat "$VENDOR/.replay2d-stamp" 2>/dev/null)" != "$STAMP" ]]; then
   echo "Fetching demoparser $DEMOPARSER_COMMIT"
   fetch "$DEMOPARSER_REPO" "$DEMOPARSER_COMMIT" "$VENDOR"
   fetch "$GAMETRACKING_REPO" "$GAMETRACKING_COMMIT" "$VENDOR/src/csgoproto/GameTracking-CS2"
   git -C "$VENDOR" apply "$ROOT/wasm/demoparser.patch"
-  echo "$STAMP" > "$VENDOR/.skybox-stamp"
+  echo "$STAMP" > "$VENDOR/.replay2d-stamp"
 fi
 
 if [[ -z "${PROTOC:-}" ]] && ! command -v protoc > /dev/null; then

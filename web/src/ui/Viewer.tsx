@@ -1,4 +1,4 @@
-import type { MapInfo, MatchMeta } from '@skybox/shared';
+import type { MapInfo, MatchMeta } from '@replay2d/shared';
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { getMaps, loadImage } from '../api';
 import { Playback } from '../playback/playback';

@@ -1,4 +1,4 @@
-import type { MapInfo, MatchMeta, ParseStatus, RoundData } from '@skybox/shared';
+import type { MapInfo, MatchMeta, ParseStatus, RoundData } from '@replay2d/shared';
 import { desktop } from './desktop';
 import { localDemo, parseInBrowser, type ParseProgress } from './parse/local';
 
@@ -22,7 +22,7 @@ export async function openDemo(file: File, onProgress: (progress: ParseProgress)
 
   const res = await fetch('/api/demos/local', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-skybox-token': desktop?.token ?? '' },
+    headers: { 'Content-Type': 'application/json', 'x-replay2d-token': desktop?.token ?? '' },
     body: JSON.stringify({ path: localPath }),
   });
   const { id } = await json<{ id: string }>(res);

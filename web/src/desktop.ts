@@ -14,8 +14,8 @@ export interface DesktopBridge {
 
 declare global {
   interface Window {
-    skybox?: DesktopBridge;
+    replay2d?: DesktopBridge;
   }
 }
 
-export const desktop: DesktopBridge | undefined = typeof window === 'undefined' ? undefined : window.skybox;
+export const desktop: DesktopBridge | undefined = typeof window === 'undefined' ? undefined : window.replay2d;

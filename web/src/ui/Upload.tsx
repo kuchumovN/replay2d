@@ -1,4 +1,4 @@
-import type { MatchMeta } from '@skybox/shared';
+import type { MatchMeta } from '@replay2d/shared';
 import { useRef, useState } from 'react';
 import { openDemo, type ParseProgress } from '../api';
 import { desktop } from '../desktop';
@@ -32,7 +32,7 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
       </div>
       <div className="upload-card">
         <h1>
-          Skybox <span className="muted">for CS2</span>
+          Replay2D <span className="muted">for CS2</span>
         </h1>
         <p className="muted">2D top-down replay of Counter-Strike 2 demos.</p>
         <div

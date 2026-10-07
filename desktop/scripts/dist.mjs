@@ -21,7 +21,7 @@ cpSync(`${desktop}dist`, stage, { recursive: true });
 writeFileSync(
   `${stage}package.json`,
   JSON.stringify(
-    { name: 'skybox', productName: 'Skybox', version, description: '2D replay viewer for CS2 demos', main: 'main.mjs', type: 'module', author: 'Skybox' },
+    { name: 'replay2d', productName: 'Replay2D', version, description: '2D replay viewer for CS2 demos', main: 'main.mjs', type: 'module', author: 'Replay2D' },
     null,
     2,
   ),
@@ -53,8 +53,8 @@ await build({
   targets,
   publish: 'never',
   config: {
-    appId: 'com.kuchumov.skybox',
-    productName: 'Skybox',
+    appId: 'com.kuchumov.replay2d',
+    productName: 'Replay2D',
     electronVersion,
     directories: { app: stage, output: `${desktop}release`, buildResources: `${desktop}build` },
     asar: false,

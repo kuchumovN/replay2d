@@ -1,5 +1,5 @@
 {
-  "name": "@skybox/web",
+  "name": "@replay2d/web",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,7 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@skybox/shared": "*",
+    "@replay2d/shared": "*",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

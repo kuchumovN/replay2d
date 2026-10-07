@@ -3,7 +3,7 @@ import { createWriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { app, shell } from 'electron';
 
-const REPO = 'kuchumovN/skybox-cs2';
+const REPO = 'kuchumovN/replay2d';
 
 export interface UpdateCheck {
   current: string;
@@ -39,7 +39,7 @@ export function isNewer(a: string, b: string): boolean {
 
 export async function checkForUpdate(): Promise<UpdateCheck> {
   const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
-    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'Skybox' },
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'Replay2D' },
   });
   if (!res.ok) throw new Error(`GitHub responded ${res.status}`);
   const release = (await res.json()) as { tag_name: string; assets: { name: string; browser_download_url: string }[] };
@@ -60,7 +60,7 @@ export async function installUpdate(onProgress: (fraction: number) => void): Pro
   if (!latest) await checkForUpdate();
   if (!latest) throw new Error('No installer for this platform in the latest release');
 
-  const res = await fetch(latest.assetUrl, { headers: { 'User-Agent': 'Skybox' } });
+  const res = await fetch(latest.assetUrl, { headers: { 'User-Agent': 'Replay2D' } });
   if (!res.ok || !res.body) throw new Error(`Download failed: ${res.status}`);
   const total = Number(res.headers.get('content-length')) || 0;
   const file = join(app.getPath('temp'), latest.assetName);

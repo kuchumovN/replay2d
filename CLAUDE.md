@@ -1,15 +1,19 @@
-# Skybox для CS2 — контекст проекта
+# Replay2D для CS2 — контекст проекта
 
-Веб-приложение: открываешь `.dem` CS2 → матч проигрывается в 2D сверху на радаре карты (а-ля Skybox).
+Веб-приложение: открываешь `.dem` CS2 → матч проигрывается в 2D сверху на радаре карты (по мотивам Skybox).
 Браузерная версия парсит демку прямо в браузере (WASM), сервер не нужен; десктоп — Electron с нативным парсером.
 Пользовательская документация — `README.md`. Этот файл — для продолжения разработки.
 
 ## Согласованные с пользователем решения (не менять без вопроса)
 
+- Название — **Replay2D** (раньше Skybox; переименовано, т.к. Skybox — продукт Skybox Technologies для CS,
+  риск путаницы/товарного знака). Имя «Skybox» нигде не использовать. Домен — replay2d.com (покупает
+  пользователь; подключение к Pages — после покупки). Репо — `kuchumovN/replay2d`, локальная папка осталась `skybox`.
+
 - Парсинг через demoparser2. Веб — WASM-сборка в Web Worker, без сервера (статический сайт); десктоп — нативный
   `@laihoe/demoparser2` (Rust/NAPI) через локальный Fastify. Режим веб-сервера (`npm start`, загрузка файла) убран.
 - WASM собирается локально (rustup + wasm-pack) и в CI; результат не коммитится.
-- Публичная версия — GitHub Pages: https://kuchumovn.github.io/skybox-cs2/, деплой на каждый push в `main`
+- Публичная версия — GitHub Pages: https://kuchumovn.github.io/replay2d/, деплой на каждый push в `main`
   (`.github/workflows/pages.yml`). Радары выкладываются вместе с сайтом.
 - Источник демок — только локальный файл (drag&drop). Без URL/FACEIT/share codes.
 - MVP: позиции + взгляд, гранаты, килфид + скорборд, бомба + выстрелы, таймлайн раундов. Всё сделано.
@@ -32,7 +36,7 @@ Actions + Releases, macOS — только Apple Silicon (Intel не подде�
 ## Правила работы
 
 - Перед реализацией фичи с неоднозначностью (поведение UI, API, архитектура) — спросить через AskUserQuestion, все вопросы разом.
-- Коммитить/пушить только по просьбе. Remote: `git@github.com:kuchumovN/skybox-cs2.git` (публичный), ветка `main`. Автор коммитов — `nkuchumov010@gmail.com`; рабочий адрес нигде не должен фигурировать.
+- Коммитить/пушить только по просьбе. Remote: `git@github.com:kuchumovN/replay2d.git` (публичный), ветка `main`. Автор коммитов — `nkuchumov010@gmail.com`; рабочий адрес нигде не должен фигурировать.
 - Стиль: TS strict, комментарии в коде на английском и только там, где неочевидно; ESM, импорты сервера с `.js`.
 - После изменений: `npm test` и `npm run typecheck`; для UI — визуальная проверка (см. ниже).
 
@@ -82,13 +86,13 @@ npm workspaces: `shared/` (типы + пайплайн парсинга), `serve
 | `scripts/fetch-maps.ts`, `map-info.ts` | загрузка радаров, выбор картинки уровня, `maps.json` |
 | `server/src/app.ts` | `buildServer({ localFileToken, webRoot })` — бэкенд десктопа: `/api/demos/local`, статус, раунды, раздача `web/dist` |
 | `desktop/src/main.ts` | Electron: сервер в процессе на `127.0.0.1:<random>`, окно, путь к нативному парсеру |
-| `desktop/src/preload.ts` | `window.skybox` = `pathForFile` (webUtils) + токен (через IPC) |
+| `desktop/src/preload.ts` | `window.replay2d` = `pathForFile` (webUtils) + токен (через IPC) |
 | `desktop/src/updater.ts` | «Check for updates»: GitHub API `releases/latest`, ассет по суффиксу из `dist.mjs`; Windows — тихая установка `/S --updated --force-run` и выход, macOS — открыть `.dmg`. UI — `web/src/ui/UpdateButton.tsx` (проверка при запуске) |
 | `desktop/scripts/bundle.mjs` | esbuild: `main.mjs`, `worker.mjs` (ESM + require-shim), `preload.cjs`; копирует `web/dist` |
 | `desktop/scripts/dist.mjs` | stage-каталог без node_modules, нативный парсер в `resources/native`, electron-builder |
 | `.github/workflows/wasm.yml` | переиспользуемый: сборка WASM (ubuntu, кэш cargo) → артефакт `demoparser-wasm` |
 | `.github/workflows/pages.yml` | push в `main` → сайт на GitHub Pages |
-| `.github/workflows/release.yml` | `wasm.yml` → сборка на macos-latest + windows-latest; тег `v*` → GitHub Release (только артефакты `skybox-*`) |
+| `.github/workflows/release.yml` | `wasm.yml` → сборка на macos-latest + windows-latest; тег `v*` → GitHub Release (только артефакты `replay2d-*`) |
 
 Модель данных раунда: кадры на равномерной сетке `startTick + i*2` (32 Гц) в колоночном виде на игрока
 (`x/y/z/yaw` могут быть `null`), медленное состояние каждые 16 тиков (броня, деньги, K/D/A, инвентарь),
@@ -155,18 +159,18 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 
 - Десктоп переиспользует сервер: Electron main поднимает `buildServer` на случайном порту, окно грузит
   `http://127.0.0.1:<port>/`. Вместо загрузки файла фронт шлёт путь (`POST /api/demos/local`, заголовок
-  `x-skybox-token`). Если пути нет (`pathForFile` вернул ""), десктоп парсит в браузере через WASM.
+  `x-replay2d-token`). Если пути нет (`pathForFile` вернул ""), десктоп парсит в браузере через WASM.
 - demoparser2 0.42.0: **нет** опубликованных `darwin-x64` (последний 0.23.0) и `darwin-universal` (только в
   optionalDependencies) → macOS-сборка только arm64. Windows — `win32-x64-msvc`.
 - electron-builder не копирует папки `node_modules` в `extraResources` → парсер кладётся в
   `resources/native/demoparser2`, `.node` копируется рядом с `index.js` (загрузчик сначала ищет локальный файл);
-  путь передаётся воркеру через `SKYBOX_DEMOPARSER`.
+  путь передаётся воркеру через `REPLAY2D_DEMOPARSER`.
 - electron-builder тащит `dependencies` из `desktop/package.json` в приложение → там их нет намеренно (всё в бандле).
 - `asar: false` (воркер и нативный модуль вне архива), `mac.identity: '-'` (ad-hoc, иначе не запустится на
   Apple Silicon), `hardenedRuntime: false` (с ad-hoc подписью блокирует загрузку нативной библиотеки).
 - Версия релиза берётся из тега (`GITHUB_REF_NAME`), локально — из `desktop/package.json`. Обновление в приложении
   видит только опубликованные релизы (тег `v*`), ручной запуск workflow релиз не создаёт.
-- Проверка упакованного приложения: запустить `Skybox.app/Contents/MacOS/Skybox --remote-debugging-port=9333`,
+- Проверка упакованного приложения: запустить `Replay2D.app/Contents/MacOS/Replay2D --remote-debugging-port=9333`,
   подключиться `puppeteer.connect({ browserURL })`, `input[type=file].uploadFile(path)` (webUtils даёт путь).
   Проверять копию из `.dmg` вне проекта — внутри проекта парсер может случайно найтись в корневых node_modules.
 - `npm audit`: moderate в `sprintf-js` через electron-builder (только инструмент сборки, в приложение не попадает).
@@ -176,7 +180,7 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 
 - `fixtures/test_demo.dem` (gitignored) — публичная демка из репо demoparser (`src/parser/test_demo.dem`):
   de_mirage, MM, 10 раундов, T 8:2 сдачей. На ней интеграционные тесты `server/src/parse/parse.test.ts` и
-  `wasm.test.ts` (пропускаются, если файла или WASM-сборки нет; другой файл — `SKYBOX_TEST_DEMO=/path`).
+  `wasm.test.ts` (пропускаются, если файла или WASM-сборки нет; другой файл — `REPLAY2D_TEST_DEMO=/path`).
 - `mock_demos/` (gitignored) — архивы пользователя: Spirit vs MOUZ (ESL PL S24, de_dust2 13:5 и de_mirage 13:11) и
   `de_nuke.rar`. Распаковывать в scratchpad: `bsdtar -xf mock_demos/<file>.rar -C <dir>` (unrar/7z не установлены).
 - Визуальная проверка: Claude in Chrome в прошлой сессии был недоступен, использовался `puppeteer-core` из

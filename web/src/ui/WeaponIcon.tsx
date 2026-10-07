@@ -1,4 +1,4 @@
-import { isKnife, itemWeaponId, weaponDisplayName, weaponId } from '@skybox/shared';
+import { isKnife, itemWeaponId, weaponDisplayName, weaponId } from '@replay2d/shared';
 
 // Icons from lexogrine/cs2-react-hud (MIT, see assets/weapons/LICENSE), keyed by weapon id.
 const ICON_URLS: Record<string, string> = Object.fromEntries(

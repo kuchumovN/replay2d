@@ -1,4 +1,4 @@
-import type { MapInfo, MatchMeta, RoundData } from '@skybox/shared';
+import type { MapInfo, MatchMeta, RoundData } from '@replay2d/shared';
 import { samplePlayer, type PlayerSample } from '../playback/interp';
 import { bombState } from '../playback/state';
 import { drawBomb } from './bomb';

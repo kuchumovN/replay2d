@@ -1,4 +1,4 @@
-import type { GrenadeType } from '@skybox/shared';
+import type { GrenadeType } from '@replay2d/shared';
 import { worldLength } from '../map/transform';
 import { sampleGrenade } from '../playback/interp';
 import { sideColor, type DrawContext } from './context';

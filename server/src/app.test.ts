@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { buildServer, LOCAL_TOKEN_HEADER } from './app.js';
 
-const dir = mkdtempSync(join(tmpdir(), 'skybox-test-'));
+const dir = mkdtempSync(join(tmpdir(), 'replay2d-test-'));
 const csgo = join(dir, 'old.dem');
 writeFileSync(csgo, Buffer.from('HL2DEMO\0rest-of-file'));
 const text = join(dir, 'notes.txt');

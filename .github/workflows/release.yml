@@ -38,7 +38,7 @@ jobs:
       - run: npm run desktop:dist
       - uses: actions/upload-artifact@v7
         with:
-          name: skybox-${{ runner.os }}
+          name: replay2d-${{ runner.os }}
           path: |
             desktop/release/*.dmg
             desktop/release/*.exe
@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
-          pattern: skybox-*
+          pattern: replay2d-*
           path: installers
           merge-multiple: true
       - uses: softprops/action-gh-release@v3

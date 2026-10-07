@@ -1,4 +1,4 @@
-import type { Columns, DemoParser } from '@skybox/shared/parse';
+import type { Columns, DemoParser } from '@replay2d/shared/parse';
 import type { DemoFile } from './demoparser/demoparser.js';
 
 /** Bytes per chunk when copying a demo into wasm memory, so the whole file is never held twice. */

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parseDemo, type BuiltMatch } from '@skybox/shared/parse';
+import { parseDemo, type BuiltMatch } from '@replay2d/shared/parse';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { parseDemoFile } from './parse.js';
 
@@ -8,7 +8,7 @@ import { parseDemoFile } from './parse.js';
  * The browser parses with the wasm build of demoparser2 (web/src/parse); it must produce what the native
  * parser of the desktop app does. Skipped if the demo or the wasm build (`npm run build-wasm`) is missing.
  */
-const demo = process.env.SKYBOX_TEST_DEMO ?? fileURLToPath(new URL('../../../fixtures/test_demo.dem', import.meta.url));
+const demo = process.env.REPLAY2D_TEST_DEMO ?? fileURLToPath(new URL('../../../fixtures/test_demo.dem', import.meta.url));
 const pkg = new URL('../../../web/src/parse/demoparser/', import.meta.url);
 const wasmFile = new URL('demoparser_bg.wasm', pkg);
 

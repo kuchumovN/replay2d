@@ -1,4 +1,4 @@
-import type { MapInfo } from '@skybox/shared';
+import type { MapInfo } from '@replay2d/shared';
 
 /** Overview calibration is defined for a 1024×1024 radar regardless of the texture resolution. */
 export const RADAR_SIZE = 1024;
