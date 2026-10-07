@@ -1,12 +1,18 @@
+import { createRequire } from 'node:module';
 import { buildMatch, FRAME_STEP, roundStateTicks, SLOW_STEP, type BuiltMatch, type Columns } from './build.js';
-import { parser, TICKRATE } from './native.js';
 import { gridTicks, sliceRounds } from './rounds.js';
 
+const require = createRequire(import.meta.url);
+// Packaged desktop builds ship the native parser outside the bundle and point to it via SKYBOX_DEMOPARSER.
+const parser = require(process.env.SKYBOX_DEMOPARSER ?? '@laihoe/demoparser2') as typeof import('@laihoe/demoparser2');
+
+/** CS2 demos are recorded at 64 ticks per second regardless of server subtick settings. */
+const TICKRATE = 64;
 const DEFAULT_C4_TIMER = 40;
 const DEFAULT_MAX_ROUNDS = 24;
 const DEFAULT_OVERTIME_MAX_ROUNDS = 6;
 
-export const ROUND_EVENTS = ['round_start', 'begin_new_match', 'round_freeze_end', 'round_end', 'round_officially_ended'];
+const ROUND_EVENTS = ['round_start', 'begin_new_match', 'round_freeze_end', 'round_end', 'round_officially_ended'];
 const GAME_EVENTS = [
   'player_death',
   'weapon_fire',

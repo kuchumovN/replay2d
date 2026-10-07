@@ -40,17 +40,6 @@ Releases are built by GitHub Actions (`.github/workflows/release.yml`) on macOS 
 push a tag `vX.Y.Z` → installers are attached to a GitHub Release with that version. Running the workflow
 manually builds them as workflow artifacts only. `node desktop/scripts/make-icon.mjs` regenerates the icon.
 
-## Route analysis (experimental)
-
-Hidden by default: Settings (⚙) → **Route analysis**. Drop many demos (e.g. of top players); for the chosen map and
-players the app shows the most profitable **T routes** (callouts visited in the first N seconds) and **CT positions**
-(callout held before first contact), ranked by (kills − deaths) per life, on the radar and in a table.
-Compact per-demo data is kept on disk (`~/.skybox`, the desktop app uses its user-data folder), so the library grows
-without re-parsing.
-
-Optional write-up by a local LLM via [Ollama](https://ollama.com): install it, `ollama pull qwen3:8b` (or any model),
-pick the model in Settings and press **Summarize**. The model only gets the computed numbers.
-
 ## Requirements
 
 Node.js 22+. Demo parsing uses [`@laihoe/demoparser2`](https://github.com/LaihoE/demoparser) (native, prebuilt for macOS/Linux/Windows).

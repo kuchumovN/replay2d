@@ -1,8 +1,6 @@
 import type { MatchMeta } from '@skybox/shared';
 import { useEffect, useState } from 'react';
 import { getStatus } from '../api';
-import { useSettings } from '../settings';
-import { Analysis } from './Analysis';
 import { Upload } from './Upload';
 import { Viewer } from './Viewer';
 
@@ -12,17 +10,12 @@ function idFromHash(): string | null {
 }
 
 export function App() {
-  const settings = useSettings();
-  const [analysis, setAnalysis] = useState(() => location.hash === '#/analysis');
   const [id, setId] = useState(idFromHash);
   const [meta, setMeta] = useState<MatchMeta | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const onHash = () => {
-      setId(idFromHash());
-      setAnalysis(location.hash === '#/analysis');
-    };
+    const onHash = () => setId(idFromHash());
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
@@ -53,7 +46,6 @@ export function App() {
     };
   }, [id, meta?.id]);
 
-  if (analysis && settings.analysisEnabled) return <Analysis onClose={() => (location.hash = '')} />;
   if (id && meta?.id === id) {
     return <Viewer meta={meta} onClose={() => (location.hash = '')} />;
   }

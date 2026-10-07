@@ -12,9 +12,6 @@
 - Радары скачиваются скриптом из https://github.com/MurkyYT/cs2-map-icons (в git не коммитятся).
 - Многоуровневые карты (Nuke, Vertigo, Train): радары рядом, уровень игрока по Z (`verticalsections`).
 - Хранение: только текущая сессия — данные в памяти сервера (последние 3 демки), `.dem` удаляется после парсинга.
-  Исключение (решение пользователя): выжимки анализа маршрутов и настройки хранятся на диске (`dataDir`).
-- Анализ маршрутов (решения пользователя): скрыт тогглом в настройках (по умолчанию выключен); код считает статистику,
-  локальная LLM (Ollama) только пишет выводы по готовым цифрам; анализируются выбранные игроки (в базе — все).
 
 Десктоп (решения пользователя): Electron (своё окно), без подписи кода (для себя и друзей), радары вшиты в
 приложение, открытие демок — drag&drop/выбор файла (без ассоциации .dem и списка недавних), сборка в GitHub
@@ -61,9 +58,6 @@ worker → клиент опрашивает `GET /api/demos/:id` (`ParseStatus`
 | `server/src/parse/parse.ts` | все вызовы demoparser2, списки событий/пропсов, cvars |
 | `server/src/parse/rounds.ts` | `sliceRounds` — нарезка раундов (якорь — `round_end`) |
 | `server/src/parse/build.ts` | сырые данные → `RoundData` (кадры, slow, события, гранаты, эффекты), `playerKey` |
-| `server/src/analysis/*` | анализ маршрутов: `extract.ts` (лёгкий проход 4 Гц: `last_place_name` + смерти → `DemoExtract`), `library.ts` (JSON на диске, очередь по одной демке), `llm.ts` (Ollama), `routes.ts` (`/api/settings`, `/api/analysis/*`, `/api/llm/*`) |
-| `shared/src/analysis.ts` | типы выжимки, `analyze` (T: маршрут из мест за первые N с, CT: место до первого контакта), `mergePlaces`, `AppSettings` |
-| `web/src/ui/Analysis.tsx`, `Settings.tsx` | экран `#/analysis` (библиотека, игроки, радар, таблица, LLM) и диалог настроек; `render/analysis.ts` — линии/круги |
 | `web/src/playback/playback.ts` | класс `Playback`: часы (rAF), раунды, загрузка/префетч, снапшоты для React (10 Гц) |
 | `web/src/playback/interp.ts` | интерполяция игроков/гранат, телепорт > 300 ед. не интерполируется, yaw по короткой дуге |
 | `web/src/playback/state.ts` | производное состояние: бомба, ослепление, часы раунда, счёт |
@@ -119,14 +113,6 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 - TypeScript 7, Vite 8, Vitest 5, React 19, Fastify 5. В TS 7 сужение `let x: T | null = null` в цикле со switch
   ломается — писать `let x = null as T | null`.
 - `tsx watch` перезапускает сервер при правке → распарсенные демки теряются, нужно загрузить заново.
-- `dataDir`: веб — `~/.skybox` (или `SKYBOX_DATA`), десктоп — `userData`. Настройки не в localStorage: у десктопа
-  случайный порт → новый origin при каждом запуске.
-- CS2 пишет название места игрока (`last_place_name`, nav-callouts вроде `BombsiteA`, `TSpawn`) — основа анализа.
-  Извлечение: Cache 1,2 с / 115 МБ / выжимка ~100 КБ (полный парсинг — 1,5 ГБ).
-- Ollama: `think: false` (иначе qwen3 долго «думает»), повтор без `think` для моделей без поддержки. 8B-модели по-русски
-  иногда коверкают callouts — язык задаётся system-сообщением.
-- Windows: на этой машине Node не установлен системно; портативный Node — в scratchpad. Claude Preview подставляет
-  `PORT=5173` → API запускать отдельно (`PORT=3001`), в preview — только `npm run dev -w web`.
 - SVG-иконки оружия: каждой нужны `xmlns` и `fill="white"` (в исходном lexogrine у flashbang/hegrenade/smokegrenade их не было,
   поправлено вручную). Vite встраивает файлы < 4 КБ как `data:`-URI, без `xmlns` такая картинка не грузится.
 
@@ -140,11 +126,6 @@ Yaw 0 = +X; на экране угол = `-yaw`. Для одноуровневы
 - electron-builder не копирует папки `node_modules` в `extraResources` → парсер кладётся в
   `resources/native/demoparser2`, `.node` копируется рядом с `index.js` (загрузчик сначала ищет локальный файл);
   путь передаётся воркеру через `SKYBOX_DEMOPARSER`.
-- Нативный парсер в главном процессе: модули `server/src/parse/*`, `analysis/extract.ts` грузят его при импорте (ESM
-  поднимает импорты выше кода `main.ts`, до установки `SKYBOX_DEMOPARSER`) → в `main.mjs` их быть не должно
-  (`bundle.mjs` падает, если там есть `parseTicks`). При этом `main.ts` сам закрепляет парсер `require`-ом после установки
-  пути: иначе DLL выгружается при выходе воркера, пока жив её пул потоков → access violation в `demoparser2..._unloaded`
-  (гонка, воспроизводится нестабильно). В dev этого не видно: там парсер всегда загружен и в главном потоке.
 - electron-builder тащит `dependencies` из `desktop/package.json` в приложение → там их нет намеренно (всё в бандле).
 - `asar: false` (воркер и нативный модуль вне архива), `mac.identity: '-'` (ad-hoc, иначе не запустится на
   Apple Silicon), `hardenedRuntime: false` (с ad-hoc подписью блокирует загрузку нативной библиотеки).
