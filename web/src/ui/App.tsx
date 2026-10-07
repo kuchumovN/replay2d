@@ -4,7 +4,7 @@ import { getStatus } from '../api';
 import { Upload } from './Upload';
 import { Viewer } from './Viewer';
 
-/** The open demo lives in the URL hash so a page reload keeps it while the server is running. */
+/** The open demo lives in the URL hash; the desktop app keeps it across page reloads, the browser does not. */
 function idFromHash(): string | null {
   return /^#\/demo\/([\w-]+)/.exec(location.hash)?.[1] ?? null;
 }

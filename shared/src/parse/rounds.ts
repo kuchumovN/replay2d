@@ -1,4 +1,4 @@
-import { SIDE_CT, SIDE_T, type RoundEndKind, type Side } from '@skybox/shared';
+import { SIDE_CT, SIDE_T, type RoundEndKind, type Side } from '../index.js';
 
 export interface RawRoundEvent {
   event_name: string;

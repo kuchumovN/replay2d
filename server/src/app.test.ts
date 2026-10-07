@@ -12,10 +12,8 @@ writeFileSync(text, 'hello');
 
 describe('local demo endpoint', () => {
   const desktop = buildServer({ localFileToken: 'secret' });
-  const web = buildServer({});
   afterAll(async () => {
     await (await desktop).close();
-    await (await web).close();
   });
 
   const post = async (app: typeof desktop, body: unknown, token?: string) =>
@@ -25,10 +23,6 @@ describe('local demo endpoint', () => {
       headers: token ? { [LOCAL_TOKEN_HEADER]: token } : {},
       payload: body as object,
     });
-
-  it('does not exist in web mode', async () => {
-    expect((await post(web, { path: csgo }, 'secret')).statusCode).toBe(404);
-  });
 
   it('requires the token', async () => {
     expect((await post(desktop, { path: csgo })).statusCode).toBe(403);

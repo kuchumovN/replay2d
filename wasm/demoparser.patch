@@ -1,0 +1,81 @@
+diff --git a/src/parser/Cargo.toml b/src/parser/Cargo.toml
+index 00d2269..0228d50 100644
+--- a/src/parser/Cargo.toml
++++ b/src/parser/Cargo.toml
+@@ -4,6 +4,7 @@ version = "0.1.1"
+ edition = "2021"
+ 
+ [dependencies]
++web-time = "1"
+ bitter = "0.7.0"
+ prost = "0.13.3"
+ snap = "1.1.0"
+diff --git a/src/parser/src/parse_demo.rs b/src/parser/src/parse_demo.rs
+index 3a20303..d782eff 100644
+--- a/src/parser/src/parse_demo.rs
++++ b/src/parser/src/parse_demo.rs
+@@ -65,7 +65,7 @@ impl<'a> Parser<'a> {
+     }
+     pub fn parse_demo(&mut self, demo_bytes: &[u8]) -> Result<DemoOutput, DemoParserError> {
+         let _prof = std::env::var("CS2_PROF").is_ok();
+-        let _t = std::time::Instant::now();
++        let _t = web_time::Instant::now();
+         let mut first_pass_parser = FirstPassParser::new(&self.input);
+         let first_pass_output = first_pass_parser.parse_demo(demo_bytes, false)?;
+         if _prof {
+@@ -132,14 +132,14 @@ impl<'a> Parser<'a> {
+     }
+     fn second_pass_single_threaded(&self, outer_bytes: &[u8], first_pass_output: FirstPassOutput) -> Result<DemoOutput, DemoParserError> {
+         let prof = std::env::var("CS2_PROF").is_ok();
+-        let mut t = std::time::Instant::now();
++        let mut t = web_time::Instant::now();
+         let mut parser = SecondPassParser::new(first_pass_output.clone(), 16, true, None)?;
+         parser.start(outer_bytes)?;
+-        if prof { eprintln!("[prof] second_pass start(): {:.3}s", t.elapsed().as_secs_f64()); t = std::time::Instant::now(); }
++        if prof { eprintln!("[prof] second_pass start(): {:.3}s", t.elapsed().as_secs_f64()); t = web_time::Instant::now(); }
+         let second_pass_output = parser.create_output();
+-        if prof { eprintln!("[prof] create_output: {:.3}s", t.elapsed().as_secs_f64()); t = std::time::Instant::now(); }
++        if prof { eprintln!("[prof] create_output: {:.3}s", t.elapsed().as_secs_f64()); t = web_time::Instant::now(); }
+         let mut outputs = self.combine_outputs(&mut vec![second_pass_output], first_pass_output);
+-        if prof { eprintln!("[prof] combine_outputs: {:.3}s", t.elapsed().as_secs_f64()); t = std::time::Instant::now(); }
++        if prof { eprintln!("[prof] combine_outputs: {:.3}s", t.elapsed().as_secs_f64()); t = web_time::Instant::now(); }
+         if let Some(new_df) = self.rm_unwanted_ticks(&mut outputs.df) {
+             outputs.df = new_df;
+         }
+diff --git a/src/parser/src/second_pass/entities.rs b/src/parser/src/second_pass/entities.rs
+index 9d205ac..7947464 100644
+--- a/src/parser/src/second_pass/entities.rs
++++ b/src/parser/src/second_pass/entities.rs
+@@ -111,12 +111,12 @@ impl<'a> SecondPassParser<'a> {
+         events_to_emit: &mut Vec<GameEventInfo>,
+         is_fullpacket: bool,
+     ) -> Result<(), DemoParserError> {
+-        let _pp = crate::second_pass::parser::prof_on().then(std::time::Instant::now);
++        let _pp = crate::second_pass::parser::prof_on().then(web_time::Instant::now);
+         let n_updates = self.parse_paths(bitreader)?;
+         if let Some(t) = _pp {
+             crate::second_pass::parser::PROF_PATHS_NS.with(|c| c.set(c.get() + t.elapsed().as_nanos() as u64));
+         }
+-        let _pd = crate::second_pass::parser::prof_on().then(std::time::Instant::now);
++        let _pd = crate::second_pass::parser::prof_on().then(web_time::Instant::now);
+         let n_updated_values = self.decode_entity_update(bitreader, entity_id, n_updates, is_fullpacket, is_baseline, events_to_emit)?;
+         if let Some(t) = _pd {
+             crate::second_pass::parser::PROF_DECODE_NS.with(|c| c.set(c.get() + t.elapsed().as_nanos() as u64));
+diff --git a/src/parser/src/second_pass/parser.rs b/src/parser/src/second_pass/parser.rs
+index e7cf1eb..d0d105f 100644
+--- a/src/parser/src/second_pass/parser.rs
++++ b/src/parser/src/second_pass/parser.rs
+@@ -246,11 +246,11 @@ impl<'a> SecondPassParser<'a> {
+             let ok = match NetMessageType::from(msg_type as i32) {
+                 svc_PacketEntities => {
+                     if should_parse_entities {
+-                        let _pt = prof_on().then(std::time::Instant::now);
++                        let _pt = prof_on().then(web_time::Instant::now);
+                         self.parse_packet_ents(msg_bytes, is_fullpacket)?;
+                         if let Some(t) = _pt { PROF_ENTS_NS.with(|c| c.set(c.get() + t.elapsed().as_nanos() as u64)); }
+                         if !is_fullpacket {
+-                            let _ct = prof_on().then(std::time::Instant::now);
++                            let _ct = prof_on().then(web_time::Instant::now);
+                             self.collect_entities();
+                             if let Some(t) = _ct { PROF_COLLECT_NS.with(|c| c.set(c.get() + t.elapsed().as_nanos() as u64)); }
+                         }

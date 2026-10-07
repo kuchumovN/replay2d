@@ -1,12 +1,10 @@
 import type { MatchMeta } from '@skybox/shared';
 import { useRef, useState } from 'react';
-import { getStatus, openLocalDemo, uploadDemo } from '../api';
+import { openDemo, type ParseProgress } from '../api';
 import { desktop } from '../desktop';
 import { UpdateButton } from './UpdateButton';
 
-const POLL_MS = 400;
-
-type Phase = { kind: 'idle' } | { kind: 'uploading'; fraction: number } | { kind: 'parsing'; stage: string };
+type Phase = { kind: 'idle' } | ParseProgress;
 
 export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) => void; initialError: string | null }) {
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' });
@@ -18,23 +16,8 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
     if (!file || phase.kind !== 'idle') return;
     setError(null);
     try {
-      // The desktop app reads the file in place; the browser has to upload it.
-      const localPath = desktop?.pathForFile(file);
-      let id: string;
-      if (localPath) {
-        id = await openLocalDemo(localPath);
-      } else {
-        setPhase({ kind: 'uploading', fraction: 0 });
-        id = await uploadDemo(file, (fraction) => setPhase({ kind: 'uploading', fraction }));
-      }
       setPhase({ kind: 'parsing', stage: 'Starting' });
-      for (;;) {
-        const status = await getStatus(id);
-        if (status.state === 'ready') return onReady(status.meta);
-        if (status.state === 'error') throw new Error(status.error);
-        setPhase({ kind: 'parsing', stage: status.stage });
-        await new Promise((r) => setTimeout(r, POLL_MS));
-      }
+      onReady(await openDemo(file, setPhase));
     } catch (err) {
       setError((err as Error).message);
       setPhase({ kind: 'idle' });
@@ -72,9 +55,9 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
               <div className="muted">or click to choose</div>
             </>
           )}
-          {phase.kind === 'uploading' && (
+          {phase.kind === 'reading' && (
             <>
-              <div className="dropzone-title">Uploading… {Math.round(phase.fraction * 100)}%</div>
+              <div className="dropzone-title">Reading file… {Math.round(phase.fraction * 100)}%</div>
               <div className="progress">
                 <div style={{ width: `${phase.fraction * 100}%` }} />
               </div>
@@ -90,6 +73,7 @@ export function Upload({ onReady, initialError }: { onReady: (meta: MatchMeta) =
             </>
           )}
         </div>
+        {!desktop && <p className="muted privacy">Demos are parsed in your browser and never uploaded.</p>}
         {error && <div className="error">{error}</div>}
         <input ref={input} type="file" accept=".dem" hidden onChange={(e) => handle(e.target.files?.[0])} />
       </div>

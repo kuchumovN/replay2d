@@ -10,9 +10,9 @@
     "desktop"
   ],
   "scripts": {
-    "dev": "concurrently -k -n server,web -c blue,green \"npm:dev -w server\" \"npm:dev -w web\"",
+    "dev": "npm run dev -w web",
     "build": "npm run build -w web",
-    "start": "npm run build && NODE_ENV=production npm run start -w server",
+    "build-wasm": "bash scripts/build-wasm.sh",
     "test": "vitest run",
     "typecheck": "tsc -p server && tsc -p web && tsc -p scripts && tsc -p desktop",
     "fetch-maps": "tsx scripts/fetch-maps.ts",
@@ -20,7 +20,6 @@
     "desktop:dist": "npm run dist -w desktop"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0",
     "tsx": "^4.19.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3",

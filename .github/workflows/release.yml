@@ -11,7 +11,11 @@ permissions:
   contents: write
 
 jobs:
+  wasm:
+    uses: ./.github/workflows/wasm.yml
+
   build:
+    needs: wasm
     strategy:
       fail-fast: false
       matrix:
@@ -24,6 +28,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: demoparser-wasm
+          path: web/src/parse/demoparser
       - run: npm run typecheck
       - run: npm test
       - run: npm run fetch-maps
@@ -43,6 +51,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
+          pattern: skybox-*
           path: installers
           merge-multiple: true
       - uses: softprops/action-gh-release@v3

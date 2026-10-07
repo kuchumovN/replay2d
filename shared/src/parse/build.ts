@@ -16,7 +16,7 @@ import {
   type RoundMeta,
   type Side,
   type Vec3,
-} from '@skybox/shared';
+} from '../index.js';
 import type { RoundBounds } from './rounds.js';
 
 export const FRAME_STEP = 2;

@@ -111,6 +111,11 @@ button.update.error {
   width: min(520px, 100%);
 }
 
+.upload-card .privacy {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
 .upload-card h1 {
   margin: 0 0 4px;
   font-size: 32px;

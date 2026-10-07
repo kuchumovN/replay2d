@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import type { BuiltMatch } from './build.js';
-import { parseDemo } from './parse.js';
+import type { BuiltMatch } from '@skybox/shared/parse';
+import { parseDemoFile } from './parse.js';
 
 /**
  * Runs the whole pipeline on a real demo. Uses SKYBOX_TEST_DEMO or fixtures/test_demo.dem (the public
@@ -15,7 +15,7 @@ describe.skipIf(!existsSync(demo))('parseDemo (real demo)', () => {
   // Parsed in beforeAll: the describe body also runs for skipped suites (during collection).
   let match: BuiltMatch;
   beforeAll(() => {
-    match = parseDemo(demo, 'test.dem', () => {});
+    match = parseDemoFile(demo, 'test.dem', () => {});
   });
 
   it('produces rounds with ten players and consistent frames', () => {

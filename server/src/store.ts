@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto';
-import { rm } from 'node:fs/promises';
 import { Worker } from 'node:worker_threads';
 import type { MatchMeta, ParseStatus } from '@skybox/shared';
 import type { WorkerMessage } from './parse/worker.js';
@@ -15,7 +14,7 @@ interface Entry {
 const entries = new Map<string, Entry>();
 
 /**
- * Worker entry. By default a bootstrap registers tsx and loads worker.ts (dev, `npm start`); bundled builds
+ * Worker entry. By default a bootstrap registers tsx and loads worker.ts (tests); bundled builds
  * (desktop) point it at their compiled worker instead.
  */
 let workerScript: { url: URL; entry?: string } | null = null;
@@ -36,8 +35,8 @@ function evict() {
   while (ids.length > MAX_DEMOS) entries.delete(ids.shift()!);
 }
 
-/** Starts parsing in a worker thread. An uploaded (temporary) demo file is deleted once parsing finishes. */
-export function startParse(path: string, fileName: string, { deleteFile }: { deleteFile: boolean }): string {
+/** Starts parsing in a worker thread. */
+export function startParse(path: string, fileName: string): string {
   const id = randomUUID();
   const entry: Entry = { status: { state: 'parsing', stage: 'Starting' }, rounds: [] };
   entries.set(id, entry);
@@ -47,7 +46,6 @@ export function startParse(path: string, fileName: string, { deleteFile }: { del
   const worker = new Worker(script.url, { workerData: { path, fileName, entry: script.entry } });
   const finish = (status: ParseStatus) => {
     entry.status = status;
-    if (deleteFile) rm(path, { force: true }).catch(() => {});
   };
   worker.on('message', (msg: WorkerMessage) => {
     if (msg.type === 'stage') entry.status = { state: 'parsing', stage: msg.stage };

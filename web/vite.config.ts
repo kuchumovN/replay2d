@@ -3,8 +3,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: { '/api': 'http://127.0.0.1:3001' },
-  },
+  // Relative asset URLs: the static build can be hosted under any path (the app uses hash routing).
+  base: './',
+  server: { port: 5173 },
+  worker: { format: 'es' },
 });

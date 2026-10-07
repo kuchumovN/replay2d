@@ -1,0 +1,23 @@
+# Browser build of demoparser2. Mirrors the Node bindings (same parser settings and output shapes) so the web
+# app can reuse the server's parsing pipeline. Built by `npm run build-wasm` (scripts/build-wasm.sh).
+[package]
+name = "skybox-demoparser"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+parser = { path = "vendor/demoparser/src/parser" }
+ahash = "0.8"
+serde = "1"
+serde_json = "1"
+wasm-bindgen = "0.2"
+getrandom = { version = "0.2", features = ["js"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3

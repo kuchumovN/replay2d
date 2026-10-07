@@ -3,10 +3,6 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "scripts": {
-    "dev": "tsx watch --clear-screen=false src/index.ts",
-    "start": "tsx src/index.ts"
-  },
   "dependencies": {
     "@fastify/multipart": "^10.1.2",
     "@fastify/static": "^10.1.5",

@@ -10,3 +10,6 @@ desktop/stage/
 desktop/native/
 desktop/release/
 desktop/native-install/
+wasm/vendor/
+wasm/target/
+web/src/parse/demoparser/
